@@ -11,22 +11,24 @@ import GameplayKit
 
 class Player: Entity {
     var rotation = 0.0
-    var rotateVel = 0.0
+    var rotationVel = 0.0
     
     var gravitySpeed = 45.0
     var speed = 2.0
     var slide = 0.6
     
     let colAcc = 0.0001
-    /*
-    static var movingRight = false
-    static var movingLeft = false
-    static var jumping = false*/
+    
+    var movingRight = false
+    var movingLeft = false
+    var jumping = false
+    var canHingeLeft = false
+    var canHingeRight = false
     
     var colorIndex = -1
-    var prevColorIndex = -1
+    var newColorIndex = -1
     var color: UIColor!
-    var prevColor: UIColor?
+    var newColor: UIColor?
     
     override init() {
         super.init()
@@ -53,7 +55,7 @@ class Player: Entity {
         
         colorIndex = -1
         color = loadColor(colIndex: colorIndex)
-        prevColor = loadColor(colIndex: prevColorIndex)
+        newColor = loadColor(colIndex: newColorIndex)
     }
     
     override func loadSprite() {
@@ -61,13 +63,45 @@ class Player: Entity {
             each.removeFromParent()
         }
         let temp = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: 0.0, size: Double(Board.blockSize)))
-        temp.fillColor = UIColor.white
+        temp.fillColor = color
         temp.strokeColor = UIColor.clear
         temp.position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
         
-        GameState.drawNode.addChild(temp.copy() as! SKShapeNode)
-        
         sprite = [temp]
+    }
+    
+    override func updateSprite() {
+        if(GameState.playerState == "free") {
+            sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
+            sprite[0].zRotation = 0.0
+        } else if(GameState.playerState == "rotating") {
+            if(GameState.hingeDirection == "left") {
+                let pi = 3.14159265
+                var rotationRad = (rotation * 2 * pi) / 360.0
+                
+                if(GameState.begunRotation) {
+                    rotationRad = (30 * 2 * pi) / 360.0
+                }
+                
+                sprite[0].zRotation = CGFloat(rotationRad)
+                sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
+            } else {
+                let pi = 3.14159265
+                var rotationRad = (rotation * 2 * pi) / 360.0
+                
+                if(GameState.begunRotation) {
+                    rotationRad = (-30 * 2 * pi) / 360.0
+                }
+                
+                sprite[0].zRotation = CGFloat(rotationRad)
+                sprite[0].position = CGPoint(x: (x + (1 - cos(rotationRad))) * Double(Board.blockSize), y: -(y + sin(rotationRad)) * Double(Board.blockSize))
+            }
+        } else if(GameState.playerState == "changing color") {
+            sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
+            sprite[0].zRotation = 0.0
+            
+            //draw cool color things later
+        }
     }
     
     func loadColor(colIndex: Int) -> UIColor {
@@ -89,56 +123,142 @@ class Player: Entity {
         }
     }
     
+    func move(delta: Double) {
+        if(jumping) {
+            //check if able to jump
+            if(y == Double(Int(y)) && yVel == 0) {
+                yVel = -15.0 * delta
+            }
+        }
+        if(movingLeft) {
+            xVel -= GameState.moveSpeed * delta
+        }
+        if(movingRight) {
+            xVel += GameState.moveSpeed * delta
+        }
+        
+        yVel += GameState.gravity * delta
+        xVel *= 0.56
+        
+        super.update(delta: delta)
+    }
+    
+    func rotate(delta: Double) {
+        let rotateSpeed = 2.5
+        
+        if(movingLeft) {
+            rotationVel += rotateSpeed * 3 * delta
+        }
+        if(movingRight) {
+            rotationVel -= rotateSpeed * 3 * delta
+        }
+        
+        if(GameState.hingeDirection == "left") {
+            rotationVel -= rotateSpeed * delta
+        } else {
+            rotationVel += rotateSpeed * delta
+        }
+        
+        rotation += rotationVel
+        
+        if(GameState.hingeDirection == "left") {
+            if(rotation >= 30) {
+                rotation = 0.0
+                rotationVel = 0.0
+                //GameState.playerState = "free"
+                GameState.beginRotation()
+            } else if(rotation < 0) {
+                rotation = 0.0
+                rotationVel = 0.0
+                GameState.playerState = "free"
+            }
+        } else {
+            if(rotation <= -30) {
+                rotation = 0.0
+                rotationVel = 0.0
+                //GameState.playerState = "free"
+                GameState.beginRotation()
+            } else if(rotation > 0) {
+                rotation = 0.0
+                rotationVel = 0.0
+                GameState.playerState = "free"
+            }
+        }
+    }
+    
     override func update(delta: TimeInterval) {
         if(GameState.state == "in game") {
+            checkInputForMovement()
+            
             if(GameState.playerState == "free") {
-                for t in InputController.currentTouches {
-                    if(t != nil) {
-                        //jump if touched top half of the screen
-                        if(t!.y > 0) {
-                            //check if able to jump
-                            if(y == Double(Int(y)) && yVel == 0) {
-                                yVel = -0.22
-                            }
-                            
-                        //move left if touched bottom left
-                        } else if(t!.x < 0) {
-                            xVel -= GameState.moveSpeed * delta
-                            
-                        //move right if touched bottom right
-                        } else {
-                            xVel += GameState.moveSpeed * delta
-                        }
-                    }
-                }
-                
-                yVel += GameState.gravity * delta
-                xVel *= 0.56
-                
-                sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
-                
-                super.update(delta: delta)
+                move(delta: delta)
             } else if(GameState.playerState == "rotating") {
-                //print("ay rotating")
+                rotate(delta: delta)
+            } else if(GameState.playerState == "changing color") {
+                
+            }
+        } else if(GameState.state == "rotating") {
+            if(GameState.playerState == "free") {
+                checkInputForMovement()
+                
+                move(delta: delta)
+            } else if(GameState.playerState == "rotating") {
+                rotate(delta: delta)
+            }
+        }
+        
+        //updateSprite()
+    }
+    
+    func checkInputForMovement() {
+        movingRight = false
+        movingLeft = false
+        jumping = false
+        
+        for t in InputController.currentTouches {
+            if(t != nil) {
+                //jump if touched top half of the screen
+                if(t!.y > 0) {
+                    jumping = true
+                    
+                    //move left if touched bottom left
+                } else if(t!.x < 0) {
+                    movingLeft = true
+                    
+                    //move right if touched bottom right
+                } else {
+                    movingRight = true
+                }
             }
         }
     }
     
     override func checkForCollision(with: [Entity]) {
-        checkNorthSouthCollision(with: with)
-        checkEastWestCollision(with: with)
-        
-        if(x == Double(Int(x)) && y == Double(Int(y)) && xVel == 0 && yVel == 0) {
-            for t in InputController.currentTouches {
-                if(t != nil) {
-                    if(t!.y < 0) {
-                        if(t!.x < 0) {
-                            GameState.playerState = "rotating"
-                        } else {
-                            GameState.playerState = "rotating"
+        if(GameState.playerState == "free") {
+            canHingeLeft = false
+            canHingeRight = false
+            
+            checkNorthSouthCollision(with: with)
+            checkEastWestCollision(with: with)
+            
+                if(x == Double(Int(x)) && y == Double(Int(y)) && xVel == 0 && yVel == 0) {
+                    for t in InputController.currentTouches {
+                        if(t != nil) {
+                            if(t!.y < 0) {
+                                if(t!.x < 0 && canHingeLeft) {
+                                    GameState.playerState = "rotating"
+                                    GameState.hingeDirection = "left"
+                                    rotationVel = 0.1
+                                    rotation = 0.0
+                                } else if(t!.x >= 0 && canHingeRight) {
+                                    GameState.playerState = "rotating"
+                                    GameState.hingeDirection = "right"
+                                    rotationVel = -0.1
+                                    rotation = 0.0
+                                }
+                            }
                         }
                     }
-                }
             }
         }
     }
@@ -198,6 +318,9 @@ class Player: Entity {
                             nextX = entity.nextX + 1 - xMod
                             if(posInEdge <= 2.0 / step) {
                                 nextX = entity.nextX + 1
+                                if(entity.nextX == Double(Int(entity.nextX)) && entity.nextY == Double(Int(entity.nextY))) {
+                                    canHingeLeft = true
+                                }
                             }
                             xVel = 0
                             //print(" hit edge, with block at \(Int(entity.nextX)), \(Int(entity.nextY))  xmod = \(xMod)")
@@ -206,14 +329,53 @@ class Player: Entity {
                             nextX = entity.nextX - 1 + xMod
                             if(posInEdge <= 2.0 / step) {
                                 nextX = entity.nextX - 1
+                                if(entity.nextX == Double(Int(entity.nextX)) && entity.nextY == Double(Int(entity.nextY))) {
+                                    canHingeRight = true
+                                }
                             }
                             xVel = 0
                             //print(" hit edge, with block at \(Int(entity.nextX)), \(Int(entity.nextY))  xmod = \(xMod)")
                         }
                         //print("  \(nextX) - \(nextY)")
                     }
+                } else {
+                    if(entity.name == "block" && ((entity as! Block).type == 3 || (entity as! Block).type == 4) && Board.direction == (entity as! Block).direction) {
+                        let b = entity as! Block
+                        if(nextY == Double(Int(nextY)) && y == entity.y && ((x <= entity.x && nextX >= entity.x) || (x >= entity.x && nextX <= entity.x))) {
+                            if(b.type == 3 && b.colorIndex2 != colorIndex) {
+                                nextX = entity.nextX
+                                xVel = 0
+                                
+                                newColorIndex = b.colorIndex2
+                                newColor = loadColor(colIndex: newColorIndex)
+                                GameState.beginChangingColor()
+                            } else if(b.type == 4) {
+                                nextX = entity.nextX
+                                xVel = 0
+                                
+                                newColorIndex = -1
+                                newColor = b.color
+                                GameState.beginChangingColor()
+                            }
+                        }
+                    }
                 }
             }
+        }
+    }
+    
+    func finishedChangingColor() {
+        color = newColor
+        colorIndex = newColorIndex
+        newColorIndex = -1
+        newColor = loadColor(colIndex: newColorIndex)
+        sprite[0].fillColor = color
+        
+        collidesWithType = [0]
+        collidesWithType.append(colorIndex+10)
+        
+        if(colorIndex == -1) {
+            GameState.beginStageTransition()
         }
     }
     /*

@@ -66,50 +66,59 @@ class Board {
         nextStage()
     }
     
-    class func rotate(clockwise: Bool) {
-        /*
-         if(clockwise) {
-         direction += 1
-         direction %= 4
-         
-         var temp = newEmptyArray(width: blocks.count, height: blocks[0].count)
-         for row in 0 ... blocks[0].count-1 {
-         for c in 0 ... blocks.count-1 {
-         let col = blocks.count-1 - c
-         temp[row][col] = blocks[blocks.count-1-col][row]
-         }
-         }
-         var tempCoords = [Player.x, Player.y]
-         Player.x = Double(blocks.count-1)-tempCoords[1]
-         Player.y = tempCoords[0]
-         
-         let tempCoords2 = [(endBlockPoint.x/CGFloat(blockSize)), (endBlockPoint.y/CGFloat(blockSize))]
-         endBlockPoint.x = CGFloat(blockSize*(blocks.count-1-Int(tempCoords2[1])))
-         endBlockPoint.y = CGFloat(blockSize*Int(tempCoords2[0]))
-         
-         blocks = temp
+    class func rotate() {
+         if(GameState.rotateDirection == "right") {
+            direction += 1
+            direction %= 4
+            
+            var temp = newEmptyArray(width: blocks.count, height: blocks[0].count)
+            for row in 0 ... blocks[0].count-1 {
+                for c in 0 ... blocks.count-1 {
+                    let col = blocks.count-1 - c
+                    temp[row][col] = blocks[blocks.count-1-col][row]
+                }
+            }
+            
+            for entity in EntityManager.entities {
+                var tempCoords = [entity.x, entity.y]
+                entity.x = Double(blocks.count-1)-tempCoords[1]
+                entity.y = tempCoords[0]
+                
+                entity.nextX = entity.x
+                entity.nextY = entity.y
+                
+                entity.loadSprite()
+            }
+            EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
+            
+            blocks = temp
          } else {
-         direction -= 1
-         if(direction < 0) {
-         direction += 4
+            direction -= 1
+            if(direction < 0) {
+                direction += 4
+            }
+            
+            var temp = newEmptyArray(width: blocks.count, height: blocks[0].count)
+            for row in 0 ... blocks[0].count-1 {
+                for col in 0 ... blocks.count-1 {
+                    temp[row][col] = blocks[col][blocks[0].count-1-row]
+                }
+            }
+            
+            for entity in EntityManager.entities {
+                var tempCoords = [entity.x, entity.y]
+                entity.x = tempCoords[1]
+                entity.y = Double(blocks[0].count-1)-tempCoords[0]
+                
+                entity.nextX = entity.x
+                entity.nextY = entity.y
+                
+                entity.loadSprite()
+            }
+            EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
+            
+            blocks = temp
          }
-         
-         var temp = newEmptyArray(width: blocks.count, height: blocks[0].count)
-         for row in 0 ... blocks[0].count-1 {
-         for col in 0 ... blocks.count-1 {
-         temp[row][col] = blocks[col][blocks[0].count-1-row]
-         }
-         }
-         var tempCoords = [Player.x, Player.y]
-         Player.x = tempCoords[1]
-         Player.y = Double(blocks[0].count-1)-tempCoords[0]
-         
-         let tempCoords2 = [(endBlockPoint.x/CGFloat(blockSize)), (endBlockPoint.y/CGFloat(blockSize))]
-         endBlockPoint.x = CGFloat(blockSize*Int(tempCoords2[1]))
-         endBlockPoint.y = CGFloat(blockSize*(blocks[0].count-1-Int(tempCoords2[0])))
-         
-         blocks = temp
-         }*/
     }
     
     

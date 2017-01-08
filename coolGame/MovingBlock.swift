@@ -11,8 +11,10 @@ import SpriteKit
 
 class MovingBlock: Entity {
     var direction = 0
+    var colorIndex = -1
+    var color = UIColor.purple
     
-    init(dir: Int, xPos: Double, yPos: Double) {
+    init(color: Int, dir: Int, xPos: Double, yPos: Double) {
         super.init()
         
         direction = dir
@@ -21,17 +23,28 @@ class MovingBlock: Entity {
         
         name = "moving block"
         isDynamic = true
-        collisionType = 0
         collidesWithType = [0]
         collisionPriority = 10
         drawPriority = 10
+        
+        colorIndex = color
+        
+        if(colorIndex == -1) {
+            collisionType = 0
+        } else {
+            collisionType = colorIndex + 10
+        }
+        
+        initColor()
         
         loadSprite()
     }
     
     override func update(delta: TimeInterval) {
-        if((Board.direction + direction) % 2 == 0) {
-            yVel += GameState.gravity * delta
+        if(GameState.playerState == "free") {
+            if((Board.direction + direction) % 2 == 0) {
+                yVel += GameState.gravity * delta
+            }
         }
         
         sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
@@ -39,10 +52,26 @@ class MovingBlock: Entity {
         super.update(delta: delta)
     }
     
+    func initColor() {
+        //var color = UIColor.purple
+        if(colorIndex == -1) {
+            let blockVariation = Int(rand()*Board.colorVariation)
+            color = UIColor(red: 1.0-(CGFloat(blockVariation)/255.0), green: 1.0-(CGFloat(blockVariation)/255.0), blue: 1.0-(CGFloat(blockVariation)/255.0), alpha: 1.0)
+        } else {
+            let blockVariation = Int((Board.colorVariation/2.0) - (rand()*Board.colorVariation))
+            var colorArray = ColorTheme.colors[Board.colorTheme][colorIndex]
+            
+            for index in 0 ... 2 {
+                colorArray[index] = max(min(colorArray[index] + blockVariation, 255), 0)
+            }
+            
+            color = UIColor(red: CGFloat(colorArray[0]) / 255.0, green: CGFloat(colorArray[1]) / 255.0, blue: CGFloat(colorArray[2]) / 255.0, alpha: 1.0)
+        }
+    }
+    
     override func checkForCollision(with: [Entity]) {
         for entity in with {
             if(entityCollides(this: self, with: entity)) {
-                
                 let colAcc = 0.001
                 
                 if(yVel > 0) {
@@ -62,7 +91,7 @@ class MovingBlock: Entity {
     override func loadSprite() {
         let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)))
         s.position = CGPoint(x: x*Double(Board.blockSize), y: -y*Double(Board.blockSize))
-        s.fillColor = UIColor.purple
+        s.fillColor = color
         s.strokeColor = UIColor.clear
         self.sprite = [s]
     }

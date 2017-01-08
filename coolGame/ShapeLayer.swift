@@ -58,12 +58,13 @@ func getTrianglePath(corner: CGPoint, rotation: Double, size: Double) -> CGPath 
     
     let pi = 3.14159
     let trianglePath = UIBezierPath()
+    let rot = (rotation * pi * 2) / 360.0
     
     trianglePath.move(to: CGPoint(x: corner.x, y: corner.y))
-    trianglePath.addLine(to: CGPoint(x: corner.x + CGFloat(size*cos(rotation+(pi/3))),
-                                     y: corner.y + CGFloat(size*sin(rotation+(pi/3))) ) )
-    trianglePath.addLine(to: CGPoint(x: corner.x + CGFloat(size*cos(rotation)),
-                                     y: corner.y + CGFloat(size*sin(rotation)) ) )
+    trianglePath.addLine(to: CGPoint(x: corner.x + CGFloat(size*cos(rot+(pi/3))),
+                                     y: corner.y + CGFloat(size*sin(rot+(pi/3))) ) )
+    trianglePath.addLine(to: CGPoint(x: corner.x + CGFloat(size*cos(rot)),
+                                     y: corner.y + CGFloat(size*sin(rot)) ) )
     
     trianglePath.close()
     return trianglePath.cgPath

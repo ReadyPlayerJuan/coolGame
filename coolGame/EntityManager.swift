@@ -12,7 +12,7 @@ import SpriteKit
 class EntityManager {
     static var entities: [Entity] = []
     static var nextID = 0
-    static let collisionRadius = 2.0
+    static let collisionRadius = 1.3
     
     static func addEntity(entity: Entity) {
         entities.append(entity)
@@ -39,6 +39,7 @@ class EntityManager {
     static func moveEntities() {
         for e in entities {
             e.move()
+            e.updateSprite()
         }
     }
     

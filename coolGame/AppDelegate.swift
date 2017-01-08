@@ -5,8 +5,8 @@
 //  Created by Erin Seel on 12/3/16.
 //  Copyright © 2016 Nick Seel. All rights reserved.
 //
-//import HockeySDK
 import UIKit
+//import HockeySDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,10 +17,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions:[UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         /*
-        BITHockeyManager.shared().configure(withIdentifier: "6d1c8e8a2de64b54bc7e1104eee3db79")
+        BITHockeyManager.shared().configure(withIdentifier: "968c1f596266449795313281eabb6296")
         // Do some additional configuration if needed here
         BITHockeyManager.shared().start()
         BITHockeyManager.shared().authenticator.authenticateInstallation()*/
+
 
         return true
     }

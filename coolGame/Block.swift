@@ -132,6 +132,26 @@ class Block: Entity {
         //col = color
     }
     
+    override func updateSprite() {
+        if(type == 4) {
+            let cycle = 1.0
+            var b = GameState.time
+            
+            let a = Double(Int(b/cycle))*cycle
+            let c = b - a
+            b = c
+            
+            b /= cycle
+            b *= 2
+            b = b - 1
+            b = pow(abs(b), 1.0)
+            
+            let otherColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: CGFloat(b))
+            
+            sprite[1].fillColor = otherColor
+        }
+    }
+    
     override func loadSprite() {
         if(type == 0 || type == 1 || type == 2 || type == 5) {
             let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)))
@@ -142,7 +162,7 @@ class Block: Entity {
         } else if(type == 3 || type == 4) {
             
             var point = CGPoint()
-            point = CGPoint(x: x*Double(Board.blockSize), y: y*Double(Board.blockSize));
+            point = CGPoint(x: x, y: y);
             
             var k = Board.direction - direction
             k %= 4
@@ -150,51 +170,49 @@ class Block: Entity {
                 k += 4
             }
             
-            let unmodified = CGPoint(x: x*Double(Board.blockSize), y: y*Double(Board.blockSize))
+            let unmodified = CGPoint(x: x, y: y)
             
             switch(k) {
             case 0:
-                point = CGPoint(x: x*Double(Board.blockSize), y: y*Double(Board.blockSize) + Double(Board.blockSize)); break
+                point = CGPoint(x: x, y: y); break
             case 1:
-                point = CGPoint(x: x*Double(Board.blockSize), y: y*Double(Board.blockSize)); break
+                point = CGPoint(x: x, y: y - 1); break
             case 2:
-                point = CGPoint(x: x*Double(Board.blockSize) + Double(Board.blockSize), y: y*Double(Board.blockSize)); break
+                point = CGPoint(x: x + 1, y: y - 1); break
             case 3:
-                point = CGPoint(x: x*Double(Board.blockSize) + Double(Board.blockSize), y: y*Double(Board.blockSize) + Double(Board.blockSize)); break
+                point = CGPoint(x: x + 1, y: y); break
             default:
-                point = CGPoint(x: x*Double(Board.blockSize), y: y*Double(Board.blockSize) + Double(Board.blockSize)); break
+                point = CGPoint(x: x, y: y); break
             }
             
             if(type == 4) {
-                let cycle = 1.0
-                var b = 0.0//time
+                let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)))
+                s.position = CGPoint(x: unmodified.x*CGFloat(Board.blockSize), y: -unmodified.y*CGFloat(Board.blockSize))
+                s.fillColor = color
+                s.strokeColor = UIColor.clear
                 
-                let a = Double(Int(b/cycle))*cycle
-                let c = b - a
-                b = c
+                let s2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: -90.0 * Double(Board.direction - direction), size: Double(Board.blockSize)))
+                s2.position = CGPoint(x: point.x*CGFloat(Board.blockSize), y: -point.y*CGFloat(Board.blockSize))
+                //s2.fillColor = UIColor.purple //color is set in updateSprite()
+                s2.strokeColor = UIColor.clear
                 
-                b /= cycle
-                b *= 2
-                b = 1 - b
-                b = abs(b)
+                self.sprite = [s, s2]
                 
-                let otherColor = UIColor(red: CGFloat(b), green: CGFloat(b), blue: CGFloat(b), alpha: 1.0)
-                
-                /*
-                 let rect = SKShapeNode.init(rectOf: CGSize(width: Board.blockSize+1, height: Board.blockSize+1))
-                 rect.fillColor = color
-                 rect.strokeColor = color
-                 rect.position = CGPoint(x: unmodified.x, y: unmodified.y)
-                 
-                 let tri = SKShapeNode.init(path: Board.getTrianglePath(size: Double(Board.blockSize+1), rotation: Double(Board.direction - direction)*(3.14159/2)))
-                 tri.fillColor = otherColor
-                 tri.strokeColor = otherColor
-                 tri.position = CGPoint(x: point.x, y: point.y)*/
-                
-                //sprite = [RectangleLayer.init(rect: CGRect(x: unmodified.x, y: unmodified.y, width: CGFloat(Board.blockSize+1), height: CGFloat(Board.blockSize+1)), col: color.cgColor), TriangleLayer.init(col: otherColor.cgColor, corner: point, rotate: Double(Board.direction - direction)*(3.14159/2), sideLength: Double(Board.blockSize+1))]
+                updateSprite()
             } else {
-                let color2 = UIColor(red: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][0])/255.0, green: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][1])/255.0, blue: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][2])/255.0, alpha: 1.0).cgColor
-                //sprite = [RectangleLayer.init(rect: CGRect(x: x*Double(Board.blockSize), y: y*Double(Board.blockSize), width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)), col: color.cgColor),  TriangleLayer.init(col: color2, corner: point, rotate: Double(Board.direction - direction)*(3.14159/2), sideLength: Double(Board.blockSize)) ]
+                let color2 = UIColor(red: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][0])/255.0, green: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][1])/255.0, blue: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][2])/255.0, alpha: 1.0)
+                
+                let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)))
+                s.position = CGPoint(x: unmodified.x*CGFloat(Board.blockSize), y: -unmodified.y*CGFloat(Board.blockSize))
+                s.fillColor = color
+                s.strokeColor = UIColor.clear
+                
+                let s2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: -90.0 * Double(Board.direction - direction), size: Double(Board.blockSize)))
+                s2.position = CGPoint(x: point.x*CGFloat(Board.blockSize), y: -point.y*CGFloat(Board.blockSize))
+                s2.fillColor = color2
+                s2.strokeColor = UIColor.clear
+                
+                self.sprite = [s, s2]
             }
         }
     }
