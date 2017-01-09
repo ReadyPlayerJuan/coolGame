@@ -11,11 +11,13 @@ import GameplayKit
 
 class Board {
     static var blocks: [[Block?]]!
+    static var otherEntities: [Entity] = []
+    
     static var blockSize = 75
     static var spawnPoint: CGPoint!
     static var colorTheme = 0
     static var direction = 0
-    static let colorVariation = 20.0
+    static let colorVariation = 25.0
     
     static var stageNum = -1
     
@@ -33,6 +35,7 @@ class Board {
     class func nextStage() {
         stageNum += 1
         direction = 0
+        otherEntities = []
         var temp = getStage(index: stageNum)
         
         //Player.reset()
@@ -87,6 +90,10 @@ class Board {
                 entity.nextX = entity.x
                 entity.nextY = entity.y
                 
+                let temp = entity.xVel
+                entity.xVel = entity.yVel * -1
+                entity.yVel = temp
+                
                 entity.loadSprite()
             }
             EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
@@ -112,6 +119,10 @@ class Board {
                 
                 entity.nextX = entity.x
                 entity.nextY = entity.y
+                
+                let temp = entity.xVel
+                entity.xVel = entity.yVel
+                entity.yVel = temp * -1
                 
                 entity.loadSprite()
             }
@@ -220,6 +231,7 @@ class Board {
                         [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 4, 4, 0, 0, 1],
                         [1, 0, 0, 0, 0, 0,013,0, 1,-9,-9, 1, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
+            otherEntities.append(MovingBlock.init(color: 0, dir: 0, xPos: 2, yPos: 1))
             colorTheme = 0
             spawnPoint = CGPoint(x: 4, y: 6); break
         case 3:

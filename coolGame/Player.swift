@@ -127,7 +127,7 @@ class Player: Entity {
         if(jumping) {
             //check if able to jump
             if(y == Double(Int(y)) && yVel == 0) {
-                yVel = -15.0 * delta
+                yVel = -0.22
             }
         }
         if(movingLeft) {
@@ -310,11 +310,11 @@ class Player: Entity {
                     let colAcc = 0.001
                     
                     //check for collision in multiple points throughout the edges of the player
-                    let step = 20.0
+                    let step = 50.0
                     for posInEdge in stride(from: 0.0, through: 1.0, by: (1.0 / step)) {
                         xMod = posInEdge/2
                         yMod = posInEdge * (sqrt(3.0) / -2.0)
-                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + xMod), y: (nextY + yMod - colAcc)))) {
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + xMod), y: (nextY + yMod - colAcc))) && entity.nextX + 0.5 < x) {
                             nextX = entity.nextX + 1 - xMod
                             if(posInEdge <= 2.0 / step) {
                                 nextX = entity.nextX + 1
@@ -325,7 +325,7 @@ class Player: Entity {
                             xVel = 0
                             //print(" hit edge, with block at \(Int(entity.nextX)), \(Int(entity.nextY))  xmod = \(xMod)")
                         }
-                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + 1 - xMod - colAcc), y: (nextY + yMod - colAcc)))) {
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + 1 - xMod - colAcc), y: (nextY + yMod - colAcc))) && entity.nextX + 0.5 > x) {
                             nextX = entity.nextX - 1 + xMod
                             if(posInEdge <= 2.0 / step) {
                                 nextX = entity.nextX - 1

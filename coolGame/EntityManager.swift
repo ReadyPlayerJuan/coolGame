@@ -11,6 +11,8 @@ import SpriteKit
 
 class EntityManager {
     static var entities: [Entity] = []
+    static var entitiesByDrawPriority: [Entity] = []
+    static var entitiesByCollisionPriority: [Entity] = []
     static var nextID = 0
     static let collisionRadius = 1.3
     
@@ -27,7 +29,7 @@ class EntityManager {
     }
     
     static func checkForCollision() {
-        for e in sortEntitiesByCollisionPriority() {
+        for e in entitiesByCollisionPriority {
             if(e.isDynamic) {
                 e.checkForCollision(with: getEntitiesNear(entity: e, radius: 2.0))
             }
@@ -51,7 +53,7 @@ class EntityManager {
                 }
             }
             
-            for e in sortEntitiesByDrawPriority() {
+            for e in entitiesByDrawPriority {
                 for sprite in e.getSpriteLayer() {
                     node.addChild(sprite)
                 }
@@ -72,6 +74,11 @@ class EntityManager {
         }
         
         return temp
+    }
+    
+    static func sortEntities() {
+        entitiesByDrawPriority = sortEntitiesByDrawPriority()
+        entitiesByCollisionPriority = sortEntitiesByCollisionPriority()
     }
     
     static func sortEntitiesByCollisionPriority() -> [Entity] {

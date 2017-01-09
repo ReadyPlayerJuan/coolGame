@@ -117,7 +117,8 @@ class Block: Entity {
                 color = UIColor(red: 1.0-(CGFloat(blockVariation)/255.0), green: 1.0-(CGFloat(blockVariation)/255.0), blue: 1.0-(CGFloat(blockVariation)/255.0), alpha: 1.0)
             }
         } else if(type == 2 || type == 3 || type == 4) {
-            let blockVariation = Int((Board.colorVariation/2.0) - (rand()*Board.colorVariation))
+            let n = 1.0
+            let blockVariation = Int((Board.colorVariation*n) - (rand()*Board.colorVariation*2*n))
             var colorArray = ColorTheme.colors[Board.colorTheme][colorIndex]
             
             for index in 0 ... 2 {
@@ -154,7 +155,7 @@ class Block: Entity {
     
     override func loadSprite() {
         if(type == 0 || type == 1 || type == 2 || type == 5) {
-            let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)))
+            let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+0), height: Double(Board.blockSize+0)))
             s.position = CGPoint(x: x*Double(Board.blockSize), y: -y*Double(Board.blockSize))
             s.fillColor = color
             s.strokeColor = UIColor.clear
@@ -186,7 +187,7 @@ class Block: Entity {
             }
             
             if(type == 4) {
-                let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)))
+                let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+0), height: Double(Board.blockSize+0)))
                 s.position = CGPoint(x: unmodified.x*CGFloat(Board.blockSize), y: -unmodified.y*CGFloat(Board.blockSize))
                 s.fillColor = color
                 s.strokeColor = UIColor.clear
@@ -202,7 +203,7 @@ class Block: Entity {
             } else {
                 let color2 = UIColor(red: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][0])/255.0, green: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][1])/255.0, blue: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][2])/255.0, alpha: 1.0)
                 
-                let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+1), height: Double(Board.blockSize+1)))
+                let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+0), height: Double(Board.blockSize+0)))
                 s.position = CGPoint(x: unmodified.x*CGFloat(Board.blockSize), y: -unmodified.y*CGFloat(Board.blockSize))
                 s.fillColor = color
                 s.strokeColor = UIColor.clear

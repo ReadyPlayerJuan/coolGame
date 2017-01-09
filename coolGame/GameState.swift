@@ -49,12 +49,16 @@ class GameState {
                 EntityManager.addEntity(entity: Board.blocks[row][col]!)
             }
         }
+        if(Board.otherEntities.count != 0) {
+            for e in Board.otherEntities {
+                EntityManager.addEntity(entity: e)
+            }
+        }
         let p = Player.init()
         EntityManager.addEntity(entity: p)
         (EntityManager.getPlayer()! as! Player).reset()
         
-        EntityManager.addEntity(entity: MovingBlock.init(color: -1, dir: 0, xPos: 2, yPos: 2))
-        
+        EntityManager.sortEntities()
         EntityManager.redrawEntities(node: drawNode, name: "all")
     }
     
@@ -62,8 +66,8 @@ class GameState {
         time += delta
         
         if(state == "in game") {
-            drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
             EntityManager.updateEntities(delta: delta)
+            drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
             
             rotateNode.zRotation = 0.0
             
@@ -96,8 +100,8 @@ class GameState {
         } else if(state == "rotating") {
             rotateTimer -= delta
             
-            drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
             EntityManager.updateEntities(delta: delta)
+            drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
             rotateNode.zRotation = CGFloat(getRotationValue())
             
             if(begunRotation) {
