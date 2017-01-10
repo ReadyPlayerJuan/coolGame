@@ -355,6 +355,7 @@ class Player: Entity {
                                 
                                 newColorIndex = -1
                                 newColor = b.color
+                                GameState.exitTarget = b.exitTarget!
                                 GameState.beginChangingColor()
                             }
                         }

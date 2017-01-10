@@ -27,6 +27,7 @@ class GameState {
     static let stageTransitionTimerMax = 5.0
     static var stageTransitionAngle = 0.0
     static var swappedStages = false
+    static var exitTarget = 0
     
     static var begunRotation = false
     static var rotateDirection = "right"

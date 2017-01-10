@@ -17,6 +17,8 @@ class Block: Entity {
     var direction: Int = 0
     var color: UIColor = UIColor.purple
     
+    var exitTarget: Int?
+    
     init(blockType: Int, color: Int, secondaryColor: Int, dir: Int, x: Double, y: Double) {
         super.init()
         

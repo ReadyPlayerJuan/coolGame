@@ -34,6 +34,9 @@
 		71BB811C1E203B5300024D90 /* ShapeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB810C1E203B5300024D90 /* ShapeLayer.swift */; };
 		71BB81211E20563000024D90 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71BB811F1E20563000024D90 /* HockeySDK.framework */; };
 		71BB81221E20563000024D90 /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 71BB81201E20563000024D90 /* HockeySDKResources.bundle */; };
+		71BB81281E244C1200024D90 /* Stage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB81271E244C1200024D90 /* Stage.swift */; };
+		71BB812A1E244F6900024D90 /* StageSet1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB81291E244F6900024D90 /* StageSet1.swift */; };
+		71BB812C1E248E2B00024D90 /* StageSet2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB812B1E248E2B00024D90 /* StageSet2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,7 +73,7 @@
 		71BB80EF1E2039E700024D90 /* coolGameUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = coolGameUITests.swift; sourceTree = "<group>"; };
 		71BB80F11E2039E700024D90 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		71BB80FD1E203B5300024D90 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
-		71BB80FE1E203B5300024D90 /* Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
+		71BB80FE1E203B5300024D90 /* Board.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Board.swift; path = coolGame/Board.swift; sourceTree = "<group>"; usesTabs = 0; };
 		71BB80FF1E203B5300024D90 /* ColorTheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorTheme.swift; sourceTree = "<group>"; };
 		71BB81001E203B5300024D90 /* EditorScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; name = EditorScene.sks; path = coolGame/EditorScene.sks; sourceTree = "<group>"; };
 		71BB81011E203B5300024D90 /* EditorScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EditorScene.swift; path = coolGame/EditorScene.swift; sourceTree = "<group>"; };
@@ -87,6 +90,9 @@
 		71BB810C1E203B5300024D90 /* ShapeLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShapeLayer.swift; sourceTree = "<group>"; };
 		71BB811F1E20563000024D90 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = HockeySDK.framework; sourceTree = "<group>"; };
 		71BB81201E20563000024D90 /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = HockeySDKResources.bundle; sourceTree = "<group>"; };
+		71BB81271E244C1200024D90 /* Stage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
+		71BB81291E244F6900024D90 /* StageSet1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StageSet1.swift; sourceTree = "<group>"; };
+		71BB812B1E248E2B00024D90 /* StageSet2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StageSet2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +147,7 @@
 			children = (
 				71BB81241E208FD100024D90 /* Scenes and Controllers */,
 				71BB81231E208FC200024D90 /* Custom Physics */,
+				71BB81261E244BED00024D90 /* Stages */,
 				71BB81251E20900800024D90 /* Game Classes */,
 				71BB80D61E2039E700024D90 /* Assets.xcassets */,
 				71BB80DB1E2039E700024D90 /* Info.plist */,
@@ -198,6 +205,8 @@
 				71BB81071E203B5300024D90 /* MenuScene.sks */,
 				71BB81081E203B5300024D90 /* MenuScene.swift */,
 				71BB81091E203B5300024D90 /* MenuViewController.swift */,
+				71BB80D81E2039E700024D90 /* LaunchScreen.storyboard */,
+				71BB80D31E2039E700024D90 /* Main.storyboard */,
 			);
 			name = "Scenes and Controllers";
 			path = ..;
@@ -208,17 +217,26 @@
 			children = (
 				71BB80C91E2039E700024D90 /* AppDelegate.swift */,
 				71BB81051E203B5300024D90 /* GameState.swift */,
-				71BB80FE1E203B5300024D90 /* Board.swift */,
 				71BB810B1E203B5300024D90 /* Player.swift */,
 				71BB80FD1E203B5300024D90 /* Block.swift */,
 				71BB810A1E203B5300024D90 /* MovingBlock.swift */,
 				71BB81061E203B5300024D90 /* InputController.swift */,
 				71BB810C1E203B5300024D90 /* ShapeLayer.swift */,
 				71BB80FF1E203B5300024D90 /* ColorTheme.swift */,
-				71BB80D81E2039E700024D90 /* LaunchScreen.storyboard */,
-				71BB80D31E2039E700024D90 /* Main.storyboard */,
 			);
 			name = "Game Classes";
+			sourceTree = "<group>";
+		};
+		71BB81261E244BED00024D90 /* Stages */ = {
+			isa = PBXGroup;
+			children = (
+				71BB80FE1E203B5300024D90 /* Board.swift */,
+				71BB81271E244C1200024D90 /* Stage.swift */,
+				71BB81291E244F6900024D90 /* StageSet1.swift */,
+				71BB812B1E248E2B00024D90 /* StageSet2.swift */,
+			);
+			name = Stages;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -387,15 +405,18 @@
 				71BB811B1E203B5300024D90 /* Player.swift in Sources */,
 				71BB810D1E203B5300024D90 /* Block.swift in Sources */,
 				71BB810E1E203B5300024D90 /* Board.swift in Sources */,
+				71BB812C1E248E2B00024D90 /* StageSet2.swift in Sources */,
 				71BB81121E203B5300024D90 /* EditorViewController.swift in Sources */,
 				71BB81181E203B5300024D90 /* MenuScene.swift in Sources */,
 				71BB811A1E203B5300024D90 /* MovingBlock.swift in Sources */,
 				71BB810F1E203B5300024D90 /* ColorTheme.swift in Sources */,
+				71BB81281E244C1200024D90 /* Stage.swift in Sources */,
 				71BB81131E203B5300024D90 /* Entity.swift in Sources */,
 				71BB80D21E2039E700024D90 /* GameViewController.swift in Sources */,
 				71BB81111E203B5300024D90 /* EditorScene.swift in Sources */,
 				71BB80CA1E2039E700024D90 /* AppDelegate.swift in Sources */,
 				71BB81151E203B5300024D90 /* GameState.swift in Sources */,
+				71BB812A1E244F6900024D90 /* StageSet1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,6 +458,7 @@
 				71BB80D41E2039E700024D90 /* Base */,
 			);
 			name = Main.storyboard;
+			path = coolGame;
 			sourceTree = "<group>";
 		};
 		71BB80D81E2039E700024D90 /* LaunchScreen.storyboard */ = {
@@ -445,6 +467,7 @@
 				71BB80D91E2039E700024D90 /* Base */,
 			);
 			name = LaunchScreen.storyboard;
+			path = coolGame;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
