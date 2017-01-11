@@ -89,6 +89,7 @@ class GameState {
             if(!swappedStages && stageTransitionTimer <= stageTransitionTimerMax/2) {
                 Board.nextStage()
                 initEntities()
+                EntityManager.updateEntitySprites()
                 swappedStages = true
             }
             

@@ -43,7 +43,7 @@ class StageSet1 {
          - -9 is invisible impassable block, to create illusion of no blocks
          - -AB is end gate, where A-1 is direction and B-2 is colorIndex of surrounding block
          - ABC is color change, where A is direction, B-2 is colorIndex of surrounding block, and c-2 is colorIndex of color change triangle
-         */
+        */
         
         switch(index) {
         case 0:
@@ -57,7 +57,8 @@ class StageSet1 {
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 3, y: 4)
-            exitTargets = [[7, 3, 0]]; break
+            exitTargets = [[7, 3, 0]]
+            name = "platform parkour"; break
         case 1:
             stage =   [ [-9,-9,-9,-9,-9,-9,-9,1, 1, 1, 1, 1, 1],
                         [-9,-9,-9,-9,-9,-9,-9,1, 0, 0,-31,0, 1],
@@ -71,7 +72,8 @@ class StageSet1 {
                         [1, 0, 0, 0, 0, 1,-9,-9,-9,-9,-9,-9,-9],
                         [1, 1, 1, 1, 1, 1,-9,-9,-9,-9,-9,-9,-9] ]
             spawnPoint = CGPoint(x: 2, y: 9);
-            exitTargets = [[10, 1, 0]]; break
+            exitTargets = [[10, 1, 0]]
+            name = "rotating rectangles"; break
         case 2:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0,212,0, 1,-9,-9, 1, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -84,7 +86,8 @@ class StageSet1 {
                         [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             otherEntities.append(MovingBlock.init(color: 0, dir: 0, xPos: 2, yPos: 1))
             spawnPoint = CGPoint(x: 4, y: 6);
-            exitTargets = [[16, 4, 0]]; break
+            exitTargets = [[16, 4, 0]]
+            name = "colorful creations"; break
         case 3:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 1,-9,-9, 1, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -107,13 +110,14 @@ class StageSet1 {
                         [1, 5, 0, 0, 0, 0, 0, 2, 1,-9,-9, 1, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 2, y: 6);
-            exitTargets = [[15, 15, 0]]; break
+            exitTargets = [[15, 15, 0]]
+            name = "room-filled riddle"; break
         case 4:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 0, 0, 0, 0, 0, 0, 4, 3, 4, 4, 4, 0, 0, 0, 5, 0, 0, 1],
                         [1, 0, 6, 0, 2, 0, 0, 3, 2, 4, 0, 4, 5, 5, 0, 0, 0, 0, 1],
-                        [1, 0, 0, 2, 0, 4, 0, 2,263,0, 5, 3, 0, 4, 0, 3, 0, 0, 1],
+                        [1, 0, 0, 2, 0, 4, 0, 2,263,0, 5, 3, 0, 4, 3, 3, 0, 0, 1],
                         [1, 0, 0, 6, 0, 4, 0, 5, 0, 0, 0, 5, 6, 4, 3, 0, 0, 0, 1],
                         [1, 0, 0, 0, 0, 6, 5,376,0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 1],
                         [1, 0, 0, 4, 0, 0, 6,164,3, 5, 2, 0, 3, 0, 6, 4, 0, 0, 1],
@@ -123,7 +127,8 @@ class StageSet1 {
                         [1, 0, 0, 1, 1, 0, 0,012,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 2, y: 10);
-            exitTargets = [[12, 9, 0]]; break
+            exitTargets = [[12, 9, 0]]
+            name = "definitely difficult"; break
         default:
             stage =       [ [1, 1, 1, 1, 1],
                             [1, 0, 0, 0, 1],
@@ -131,7 +136,8 @@ class StageSet1 {
                             [1, 0, 0,-11,1],
                             [1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 1, y: 3);
-            exitTargets = [[3, 3, 0]]; break
+            exitTargets = [[3, 3, 0]]
+            name = "default"; break
         }
         
         return Stage.init(withBlocks: stage!, entities: otherEntities, spawn: spawnPoint, withName: name, exits: exitTargets)

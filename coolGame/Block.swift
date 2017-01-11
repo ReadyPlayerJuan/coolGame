@@ -16,12 +16,12 @@ class Block: Entity {
     var solid: Bool = true
     var direction: Int = 0
     var color: UIColor = UIColor.purple
+    var dangerous = false
     
     var exitTarget: Int?
     
     init(blockType: Int, color: Int, secondaryColor: Int, dir: Int, x: Double, y: Double) {
         super.init()
-        
         self.x = x
         self.y = y
         type = blockType
@@ -75,6 +75,13 @@ class Block: Entity {
             direction = -1
             collisionType = 0
             break
+        case 6: //hazard block
+            solid = true
+            colorIndex = -1
+            colorIndex2 = -1
+            direction = -1
+            collisionType = 0
+            break
         default: //white solid block
             solid = true
             colorIndex = -1
@@ -87,26 +94,6 @@ class Block: Entity {
         initColor()
         loadSprite()
     }
-    
-    /*
-     func isSolid() -> Bool {
-     if(type == 0 || type == 1) {
-     return solid
-     }
-     if(type == 2) {
-     return Player.colorIndex == -1 || Player.colorIndex == colorIndex
-     }
-     if(type == 3) {
-     return colorIndex != -1 && (Player.colorIndex == -1 || Player.colorIndex == colorIndex)
-     }
-     if(type == 4) {
-     return colorIndex != -1 && (Player.colorIndex == -1 || Player.colorIndex == colorIndex)
-     }
-     if(type == 5) {
-     return true
-     }
-     return true
-     }*/
     
     func initColor() {
         //var color = UIColor.purple
@@ -135,6 +122,12 @@ class Block: Entity {
         //col = color
     }
     
+    /*
+    override func update(delta: TimeInterval) {
+        super.update(delta: delta)
+        updateSprite()
+    }*/
+    
     override func updateSprite() {
         if(type == 4) {
             let cycle = 1.0
@@ -152,6 +145,7 @@ class Block: Entity {
             let otherColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: CGFloat(b))
             
             sprite[1].fillColor = otherColor
+            //sprite[1]
         }
     }
     

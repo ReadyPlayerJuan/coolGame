@@ -100,8 +100,146 @@ class Player: Entity {
             sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
             sprite[0].zRotation = 0.0
             
-            //draw cool color things later
+            updateColorEffect()
         }
+    }
+    
+    func loadColorEffect() {
+        sprite[0].removeAllChildren()
+        
+        let pattern = loadRandomEffectPattern()
+        let numTriangles = (pattern.count+1)/2
+        
+        let size = (Double(Board.blockSize) / Double(numTriangles)) + 0.0
+        
+        let diff = 0.1
+        let s = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: -diff, y: -0.0), rotation: 0.0, size: size + 2*diff))
+        s.strokeColor = UIColor.clear
+        s.fillColor = newColor!
+        
+        for ty in stride(from: 0, to: numTriangles, by: 1) {
+            s.zRotation = 0.0
+            for tx in stride(from: 0, to: numTriangles-ty, by: 1) {
+                s.position = CGPoint(x: (Double(tx) + Double(ty)/2.0)*size, y: Double(ty)*size*(sqrt(3.0)/2.0))
+                s.name = pattern[(2*(numTriangles-ty))-2][tx]
+                sprite[0].addChild(s.copy() as! SKShapeNode)
+            }
+            s.zRotation = (3.14159265358979 / 3.0)
+            for tx in stride(from: 0, to: numTriangles-ty-1, by: 1) {
+                s.position = CGPoint(x: (Double(tx+1) + Double(ty)/2.0)*size, y: Double(ty)*size*(sqrt(3.0)/2.0))
+                s.name = (pattern[(2*(numTriangles-ty))-3][tx])
+                sprite[0].addChild(s.copy() as! SKShapeNode)
+            }
+        }
+    }
+    
+    func loadRandomEffectPattern() -> [[String]] {
+        var code: String!
+        
+        let numCodes = 3.0
+        switch(Int(rand()*numCodes)) {
+        case 0:
+            code = //"e5abhln5bchln3gkm5ceino3fil3dfj3ehka3ehk3dfja3fil5ceinoaa3gkm5bchln3fil3dfj5bchln5abhln3gkm3ehk5ceino5abhln"
+                   //"gabdcedgfehgfjihgkjihmlkjinmlkjponmlkqponmlsrqponm"
+                   "gytsqwxkmsgpolqmujnircfexvdnjulgfhiotbcdhkraebpwyv"
+            break
+        case 1:
+            code = //"eeideihcdeihgbcdeihgfabcde"
+                   //"da5bdehi5cefij3dghkk3dgh3acj5defij5bdehik5bdehia5cefij3dgha"
+                   "da3bdf3cei3egi3dfj3dfj3egia3cei3bdf3dfj3bdfa3cei3egia"
+            break
+        case 2:
+            code = "iakkkyyyyyypqyppqyogqxoghrxnahrxnfbirwmecisawmdjsakwlkjskkkvlktkkyyvuutyyyyyvutyyy"
+            break
+        default:
+            code = "dabccddcecbdbacca"
+            break
+        }
+        
+        return decodeEffectPattern(code: code)
+    }
+    
+    func decodeEffectPattern(code: String) -> [[String]] {
+        var pattern: [[String]] = [[]]
+        for _ in 0...(2*numberFromLetter(code.charAt(0)))-1 {
+            pattern.append([])
+        }
+        var currentPatternRow = 0
+        
+        var index = 1
+        while(index <= code.characters.count-1) {
+            let current = code.charAt(index)
+            var cell = ""
+            
+            if(numberFromLetter(current) == -1) {
+                //current is not a letter
+                for _ in 0...current.toInt()-1 {
+                    index += 1
+                    cell = "\(cell)\(code.charAt(index))"
+                }
+            } else {
+                cell = current
+            }
+            
+            pattern[currentPatternRow].append(cell)
+            if(pattern[currentPatternRow].count > Int(Double(currentPatternRow) / 2.0)) {
+                currentPatternRow += 1
+            }
+            
+            index += 1
+        }
+        
+        return pattern
+    }
+    
+    func updateColorEffect() {
+        var max = 0
+        for tri in sprite[0].children {
+            for index in 0...(tri.name!.characters.count)-1 {
+                let number = numberFromLetter(tri.name!.charAt(index))
+                if(number > max) {
+                    max = number
+                }
+            }
+        }
+        max += 1
+        
+        let timerValue = (1.0 - (GameState.colorChangeTimer / GameState.colorChangeTimerMax)) * Double(max)
+        for tri in sprite[0].children {
+            var passedTime = Double(max)
+            var passedTimeIndex = 0
+            
+            for index in 0...(tri.name!.characters.count)-1 {
+                let number = Double(numberFromLetter(tri.name!.charAt(index)))
+                
+                if(timerValue >= number) {
+                    passedTime = number
+                    passedTimeIndex = index
+                }
+            }
+            
+            var a = timerValue - Double(passedTime)
+            if(a < 0) {
+                a = 0.0
+            } else if(a > 1) {
+                a = 1.0
+            }
+            if(passedTimeIndex%2 == 1) {
+                a = 1-a
+            }
+            
+            tri.alpha = CGFloat(a)
+        }
+    }
+    
+    func numberFromLetter(_ char: String) -> Int {
+        let chars = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"]
+        for i in 0...25 {
+            if(char == chars[i]) {
+                return i
+            }
+        }
+        return -1
     }
     
     func loadColor(colIndex: Int) -> UIColor {
@@ -348,6 +486,7 @@ class Player: Entity {
                                 
                                 newColorIndex = b.colorIndex2
                                 newColor = loadColor(colIndex: newColorIndex)
+                                loadColorEffect()
                                 GameState.beginChangingColor()
                             } else if(b.type == 4) {
                                 nextX = entity.nextX
@@ -356,6 +495,7 @@ class Player: Entity {
                                 newColorIndex = -1
                                 newColor = b.color
                                 GameState.exitTarget = b.exitTarget!
+                                loadColorEffect()
                                 GameState.beginChangingColor()
                             }
                         }
@@ -371,6 +511,7 @@ class Player: Entity {
         newColorIndex = -1
         newColor = loadColor(colIndex: newColorIndex)
         sprite[0].fillColor = color
+        sprite[0].removeAllChildren()
         
         collidesWithType = [0]
         collidesWithType.append(colorIndex+10)
@@ -379,264 +520,4 @@ class Player: Entity {
             GameState.beginStageTransition()
         }
     }
-    /*
-    func update(delta: TimeInterval, time: TimeInterval, scene: GameScene) {
-        /*
-        if(action == "changing color") {
-            y = Double(Int(y+0.5))
-            x = Double(Int(x+0.5))
-            yVel = 0
-            xVel = 0
-        } else if(action == "rotating") {
-            let rotateVelChange = 2.5
-            if(rotation > 0) {
-                if(movingRight && !movingLeft) {
-                    rotateVel += rotateVelChange*3
-                } else if(movingLeft && !movingRight) {
-                    rotateVel -= rotateVelChange*3
-                }
-                rotateVel -= rotateVelChange
-                rotation += rotateVel*delta
-                
-                if(rotation > 30) {
-                    rotation = 0
-                    rotateVel = 0
-                    GameState.beginRotation(clockwise: true)
-                    scene.rotate(clockwise: true)
-                } else if(rotation < 0) {
-                    rotation = 0
-                    rotateVel = 0
-                    action = "free"
-                    scene.resetPlayer()
-                }
-            } else if(rotation < 0) {
-                if(movingRight && !movingLeft) {
-                    rotateVel += rotateVelChange*3
-                } else if(movingLeft && !movingRight) {
-                    rotateVel -= rotateVelChange*3
-                }
-                rotateVel += rotateVelChange
-                rotation += rotateVel*delta
-                
-                if(rotation < -30) {
-                    rotation = 0
-                    rotateVel = 0
-                    GameState.beginRotation(clockwise: false)
-                    scene.rotate(clockwise: false)
-                } else if(rotation > 0) {
-                    rotation = 0
-                    rotateVel = 0
-                    action = "free"
-                    scene.resetPlayer()
-                }
-            } else if(rotation == 0) {
-                action = "free"
-                rotateVel = 0
-            }
-        } else if(action == "free") {
-            if(movingRight && !movingLeft) {
-                xVel += speed*delta
-            } else if(movingLeft && !movingRight) {
-                xVel -= speed*delta
-            }
-            
-            if(jumping && onGround()) {
-                yVel = -0.32
-            }
-            
-            //if(!onGround()) {
-            yVel += 0.02*gravitySpeed*delta
-            //}
-            
-            nxVel = xVel
-            var yCollisionFirst = false
-            
-            
-            if(true) {
-                let distanceToNextBlock = Double(Int(x+0.5)) - x
-                if(abs(distanceToNextBlock) < abs(xVel) && ((xVel > 0 && distanceToNextBlock > 0) || (xVel < 0 && distanceToNextBlock < 0))) {
-                    x = Double(Int(x+0.5))
-                    
-                    nxVel -= distanceToNextBlock
-                    yCollisionFirst = true
-                }
-            }
-            
-            checkForColorChange()
-            checkForEndGate()
-            
-            //check for collisions
-            let step: Double = Double(2*max(Int(xVel), Int(gravitySpeed*delta*yVel))) + 2.0
-            for _ in 0 ... Int(step)-1 {
-                
-                if(yCollisionFirst) {
-                    y += gravitySpeed*delta*yVel/step
-                    checkYCollision()
-                    
-                    x += nxVel/step
-                    checkXCollision()
-                } else {
-                    x += nxVel/step
-                    checkXCollision()
-                    
-                    y += gravitySpeed*delta*yVel/step
-                    checkYCollision()
-                }
-                
-                checkEdgeCollision()
-            }
-            
-            xVel *= slide
-            //yVel *= slide
-            
-            if(abs(xVel) < 0.0001) {
-                xVel = 0
-            }
-        }*/
-    }
-    
-    private func checkForColorChange() {/*
-        let blocks = Board.blocks!
-        
-        //check if on a color change triangle block
-        if(onGround() && (blocks[Int(y+1-colAcc)][Int(x+0.5)]?.colorIndex2 != colorIndex) && (blocks[Int(y+1-colAcc)][Int(x+0.5)]?.colorIndex2 != -1) && abs(x - Double(Int(x))) <= abs(xVel) && blocks[Int(y+1-colAcc)][Int(x+0.5)]?.direction == Board.direction) {
-            x = Double(Int(x+0.5))
-            xVel = 0.0
-            nxVel = 0.0
-            
-            prevColorIndex = colorIndex
-            colorIndex = (blocks[Int(y+1-colAcc)][Int(x+0.5)]?.colorIndex2)!
-            
-            prevColor = color
-            let colorArray = ColorTheme.colors[Board.colorTheme][colorIndex]
-            color = UIColor(red: CGFloat(colorArray[0]) / 255.0, green: CGFloat(colorArray[1]) / 255.0, blue: CGFloat(colorArray[2]) / 255.0, alpha: 1.0).cgColor
-            
-            action = "changing color"
-            GameState.beginChangingColor()
-        }*/
-    }
-    
-    private func checkForEndGate() {/*
-        let blocks = Board.blocks!
-        
-        //check if on the end change block
-        if(onGround() && (blocks[Int(y+1-colAcc)][Int(x+0.5)]?.type == 4) && abs(x - Double(Int(x))) <= abs(xVel) && blocks[Int(y+1-colAcc)][Int(x+0.5)]?.direction == Board.direction) {
-            x = Double(Int(x+0.5))
-            xVel = 0.0
-            nxVel = 0.0
-            
-            prevColorIndex = colorIndex
-            colorIndex = -2
-            
-            prevColor = color
-            color = blocks[Int(y+1-colAcc)][Int(x+0.5)]?.color.cgColor
-            
-            action = "changing color"
-            GameState.beginChangingColor()
-        }*/
-    }
-    
-    private func checkXCollision() {/*
-        let blocks = Board.blocks!
-        
-        if(xVel > 0) {
-            //check bottom right corner for collisions caused by x-movement
-            if(blocks[Int(y+1-colAcc)][Int(x+1-colAcc)]?.isSolid())! {
-                x = Double(Int(x+0.5))
-                xVel = 0.0
-                //nxVel = 0.0
-                
-                if(onGround()) {
-                    rotation = 1;
-                    //action = "rotating"
-                }
-            }
-        } else if(xVel < 0) {
-            //check bottom left corner for collisions caused by x-movement
-            if(blocks[Int(y+1-colAcc)][Int(x+colAcc)]?.isSolid())! {
-                x = Double(Int(x+0.5))
-                xVel = 0.0
-                //nxVel = 0.0
-                
-                if(onGround()) {
-                    rotation = -1;
-                    //action = "rotating"
-                }
-            }
-        }*/
-    }
-    
-    private func checkYCollision() {/*
-        let blocks = Board.blocks!
-        
-        if(yVel > 0) {
-            //check bottom left and bottom right corners for a floor
-            if((blocks[Int(y+1.0)][Int(x+colAcc)]?.isSolid())! || (blocks[Int(y+1.0)][Int(x+1-colAcc)]?.isSolid())!) {
-                y = Double(Int(y+0.5))
-                yVel = 0
-            }
-        } else if(yVel < 0) {
-            //check top middle corner for collosion
-            let height = sqrt(3)/2.0
-            if(blocks[Int(y+1.0-height)][Int(x+0.50)]?.isSolid())! {
-                y = Double(Int(y+0.5))-(1.0-height)
-                yVel = 0
-            }
-        }*/
-    }
-    
-    private func checkEdgeCollision() {/*
-        let blocks = Board.blocks!
-        
-        //check for collision between left and right edges and corners of blocks
-        var pushed = 0
-        let accuracy = 100.0
-        for w in 0 ... Int(accuracy) {
-            let width = Double(w) / (2.0 * accuracy)
-            let height = (1.0 - (2 * width)) * (sqrt(3)/2.0)
-            
-            var hitRightEdge = false
-            var hitLeftEdge = false
-            
-            while(pushed < 10 && !onGround() && (blocks[Int(y+1+colAcc-height)][Int(x+0.5+width-colAcc)]?.isSolid())!) {
-                x -= (1 / accuracy)
-                hitRightEdge = true
-                pushed += 1
-            }
-            
-            if(pushed >= 10) {
-                x += Double(pushed)*(1 / accuracy)
-            }
-            pushed = 0
-            
-            while(pushed < 10 && !onGround() && (blocks[Int(y+1+colAcc-height)][Int(x+0.5-width+colAcc)]?.isSolid())!) {
-                x += (1 / accuracy)
-                hitLeftEdge = true
-                pushed += 1
-            }
-            
-            if(pushed >= 10) {
-                x -= Double(pushed)*(1 / accuracy)
-            }
-            
-            if(hitRightEdge) {
-                yVel *= 0.995
-                if(abs(x - Double(Int(x+0.5))) < 0.1) {
-                    x = Double(Int(x+0.5))
-                }
-            } else if(hitLeftEdge) {
-                yVel *= 0.995
-                if(abs(Double(Int(x+0.5)) - x) < 0.1) {
-                    x = Double(Int(x+0.5))
-                }
-            }
-        }*/
-    }
-    
-    func onGround() -> Bool {/*
-        if(y == Double(Int(y)) && ((Board.blocks[Int(y+1+colAcc)][Int(x+colAcc)]?.isSolid())! || (Board.blocks[Int(y+1+colAcc)][Int(x+1-colAcc)]?.isSolid())!)) {
-            return true
-        }*/
-        return false
-    }*/
 }

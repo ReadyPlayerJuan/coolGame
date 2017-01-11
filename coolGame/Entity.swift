@@ -38,6 +38,7 @@ class Entity {
     func move() {
         x = nextX
         y = nextY
+        updateSprite()
     }
     
     func entityCollides(this: Entity, with: Entity) -> Bool {

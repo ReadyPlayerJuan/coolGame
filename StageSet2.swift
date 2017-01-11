@@ -24,6 +24,7 @@ class StageSet2 {
         var stage: [[Int]]? = nil
         var spawnPoint = CGPoint(x: -1, y: -1)
         var otherEntities: [Entity] = []
+        otherEntities = []
         var exitTargets: [[Int]]!
         var name = "nope, no name today"
         
@@ -53,7 +54,8 @@ class StageSet2 {
                         [1, 0, 0, 0, 0, 0, 0, 0, 0,-11,1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 1, y: 6)
-            exitTargets = [[9, 7, 0], [4, 5, 1]]; break
+            exitTargets = [[9, 7, 0], [4, 5, 1]]
+            name = "room 1"; break
         case 1:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -65,7 +67,8 @@ class StageSet2 {
                         [1, 0, 0, 0, 0, 0, 0, 0, 0,-11,1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 1, y: 6)
-            exitTargets = [[9, 7, 0]]; break
+            exitTargets = [[9, 7, 0]]
+            name = "room 1A"; break
         case 2:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
@@ -77,7 +80,8 @@ class StageSet2 {
                         [1, 0, 0, 0, 0, 0, 0, 0, 0,-11,1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 1, y: 6)
-            exitTargets = [[9, 7, 0]]; break
+            exitTargets = [[9, 7, 0]]
+            name = "room 1B"; break
         default:
             stage =       [ [1, 1, 1, 1, 1],
                             [1, 0, 0, 0, 1],
@@ -85,7 +89,8 @@ class StageSet2 {
                             [1, 0, 0,-11,1],
                             [1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 1, y: 3);
-            exitTargets = [[3, 3, 0]]; break
+            exitTargets = [[3, 3, 0]]
+            name = "default"; break
         }
         
         return Stage.init(withBlocks: stage!, entities: otherEntities, spawn: spawnPoint, withName: name, exits: exitTargets)

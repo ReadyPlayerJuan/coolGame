@@ -40,7 +40,14 @@ class EntityManager {
     
     static func moveEntities() {
         for e in entities {
-            e.move()
+            if(e.isDynamic) {
+                e.move()
+            }
+        }
+    }
+    
+    static func updateEntitySprites() {
+        for e in entities {
             e.updateSprite()
         }
     }

@@ -115,7 +115,6 @@ class MovingBlock: Entity {
         s.strokeColor = UIColor.clear
         self.sprite = [s]
         
-        print(direction + Board.direction)
         if((direction + Board.direction) % 2 == 0) {
             let arrow1 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: Double(Board.blockSize)*(1/3.0), y: Double(Board.blockSize)*((1/2.0) + (1/18.0))), rotation: 0.0, size: Double(Board.blockSize)*(1/3.0)))
             arrow1.strokeColor = UIColor.black
