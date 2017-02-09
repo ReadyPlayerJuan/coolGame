@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7188D1AD1E4D25360063696C /* PlayerLightEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7188D1AC1E4D25360063696C /* PlayerLightEffect.swift */; };
 		71BB80CA1E2039E700024D90 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB80C91E2039E700024D90 /* AppDelegate.swift */; };
 		71BB80CC1E2039E700024D90 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 71BB80CB1E2039E700024D90 /* GameScene.sks */; };
 		71BB80D01E2039E700024D90 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB80CF1E2039E700024D90 /* GameScene.swift */; };
@@ -60,6 +61,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		7188D1AC1E4D25360063696C /* PlayerLightEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerLightEffect.swift; sourceTree = "<group>"; };
 		71BB80C61E2039E700024D90 /* coolGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = coolGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		71BB80C91E2039E700024D90 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		71BB80CB1E2039E700024D90 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; name = GameScene.sks; path = coolGame/GameScene.sks; sourceTree = "<group>"; };
@@ -227,6 +229,7 @@
 				71C37B1D1E2AAC40001F1810 /* PlayerMovement.swift */,
 				71C37B191E281E31001F1810 /* PlayerCCEffect.swift */,
 				71C37B1B1E281ED5001F1810 /* PlayerDeathEffect.swift */,
+				7188D1AC1E4D25360063696C /* PlayerLightEffect.swift */,
 				71BB80FD1E203B5300024D90 /* Block.swift */,
 				71BB810A1E203B5300024D90 /* MovingBlock.swift */,
 				71BB81061E203B5300024D90 /* InputController.swift */,
@@ -410,6 +413,7 @@
 				71BB81141E203B5300024D90 /* EntityManager.swift in Sources */,
 				71BB80D01E2039E700024D90 /* GameScene.swift in Sources */,
 				71BB811C1E203B5300024D90 /* ShapeLayer.swift in Sources */,
+				7188D1AD1E4D25360063696C /* PlayerLightEffect.swift in Sources */,
 				71C37B1C1E281ED5001F1810 /* PlayerDeathEffect.swift in Sources */,
 				71BB81191E203B5300024D90 /* MenuViewController.swift in Sources */,
 				71BB811B1E203B5300024D90 /* Player.swift in Sources */,

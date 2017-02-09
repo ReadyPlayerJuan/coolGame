@@ -160,15 +160,20 @@ extension Player {
                     let yPos = ((1 - progress) * info[6]) + (progress * deathParticleInfo[i][1])
                     deathParticles[i].position = CGPoint(x: xPos, y: yPos)
                     deathParticles[i].zRotation += CGFloat(progress / 4)
+                    
+                    let rgb = getColor(colIndex: colorIndex)
+                    let prog2 = min(1, progress * 1.3)
+                    deathParticles[i].fillColor = UIColor.init(red: rgb[0] + (CGFloat(prog2) * (1-rgb[0])), green: rgb[1] + (CGFloat(prog2) * (1-rgb[1])), blue: rgb[2] + (CGFloat(prog2) * (1-rgb[2])), alpha: 1.0)
                     progress = pow(progress, 3)
                     deathParticles[i].alpha = CGFloat(1 - progress)
                 }
             }
         }
         
-        var t = time - 1 + 0.1
+        let showTime = 0.2
+        var t = time - 1 + showTime
         t = max(0, t)
-        t = t * 10
+        t = t / showTime
         respawnEffect.alpha = CGFloat(t)
     }
     

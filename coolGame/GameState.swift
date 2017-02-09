@@ -39,6 +39,7 @@ class GameState {
     static var rotateTimer = 0.0
     static let rotateTimerMax = 1.0
     
+    static var endingStage = false
     static var colorChangeTimer = 0.0
     static let colorChangeTimerMax = 1.0
     
@@ -106,6 +107,8 @@ class GameState {
             stageTransitionTimer -= delta
             drawNode.position = CGPoint(x: (-((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize))) + Double(getStageTransitionVector().dx), y: (((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize))) + Double(getStageTransitionVector().dy))
             
+            //(EntityManager.getPlayer()!).update(delta: delta)
+            
             if(!swappedStages && stageTransitionTimer <= stageTransitionTimerMax/2) {
                 Board.nextStage()
                 initEntities()
@@ -170,9 +173,13 @@ class GameState {
             state = "resetting stage"
         } else if(type == "change color") {
             playerState = "changing color"
+            endingStage = false
+        } else if(type == "end stage") {
+            playerState = "changing color"
+            endingStage = true
         }
         
-        if(state == "rotating") {
+        if(state == "rotating" && playerState != "changing color") {
             playerState = "paused"
             rotateTimer = rotateTimerMax
             rotateDirection = hingeDirection
@@ -235,8 +242,13 @@ class GameState {
             playerState = "free"
             drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
         } else if(playerState == "changing color") {
-            (EntityManager.getPlayer() as! Player).finishedChangingColor()
-            playerState = "free"
+            if(!endingStage) {
+                (EntityManager.getPlayer() as! Player).finishedChangingColor()
+                playerState = "free"
+            } else {
+                (EntityManager.getPlayer() as! Player).finishedChangingColor()
+                beginStageTransition()
+            }
         }
     }
     
@@ -247,11 +259,11 @@ class GameState {
         initEntities()
         swappedStages = true
     }
-    
+    /*
     class func beginChangingColor() {
         playerState = "changing color"
         colorChangeTimer = colorChangeTimerMax
-    }
+    }*/
     
     class func beginStageTransition() {
         state = "stage transition"

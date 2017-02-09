@@ -233,7 +233,7 @@ extension Player {
                                 
                                 newColorIndex = b.colorIndex2
                                 newColor = loadColor(colIndex: newColorIndex)
-                                GameState.beginChangingColor()
+                                GameState.gameAction(type: "change color")
                             } else if(b.type == 4) {
                                 nextX = entity.nextX
                                 xVel = 0
@@ -241,7 +241,7 @@ extension Player {
                                 newColorIndex = -1
                                 newColor = b.color
                                 GameState.exitTarget = b.exitTarget!
-                                GameState.beginChangingColor()
+                                GameState.gameAction(type: "end stage")
                             }
                         }
                     }

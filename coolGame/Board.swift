@@ -194,16 +194,16 @@ class Board {
     private class func loadAllStages() {
         let stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0,-11,0, 1],
-                        [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1],
+                        [1,-41,0, 0, 0, 0, 0, 0, 3,99, 1],
                         [1, 0, 0,99,99, 0, 0, 0, 4, 0, 1],
                         [1, 0, 0, 0, 0, 0, 3, 0, 4, 0, 1],
-                        [1, 0, 0, 0, 0, 0, 3, 0, 4,113,1],
-                        [1, 0,-21,3, 0, 0, 3, 0, 4,112,1],
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 3, 4,113,1],
+                        [1, 0, 0, 3, 0, 0, 3, 0, 4,112,1],
+                        [1, 0, 0, 3,313,0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [99,99,99,99,99,99,99,99,99,99,99] ]
         let spawnPoint = CGPoint(x: 1, y: 6)
-        let exitTargets = [[2, 6, 0], [8, 1, 1]]
+        let exitTargets = [[1, 2, 0], [8, 1, 1]]
         let otherEntities = [MovingBlock.init(color: 1, dir: 1, xPos: 3, yPos: 5)]
         
         hubStage = Stage.init(withBlocks: stage, entities: otherEntities, spawn: spawnPoint, withName: "hub", exits: exitTargets)

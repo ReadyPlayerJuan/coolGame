@@ -68,7 +68,7 @@ class Player: Entity {
         color = loadColor(colIndex: colorIndex)
         newColor = loadColor(colIndex: newColorIndex)
         
-        if(GameState.time > 0.5) {
+        if(GameState.time > 0.5 && !(GameState.state == "stage transition")) {
             sprite[0].removeFromParent()
             loadSprite()
             EntityManager.redrawEntities(node: GameState.drawNode, name: "player")
@@ -95,6 +95,10 @@ class Player: Entity {
                 move(delta: delta)
             } else if(GameState.playerState == "rotating") {
                 rotate(delta: delta)
+            }
+        } else if(GameState.state == "stage transition") {
+            if(GameState.stageTransitionTimer > GameState.stageTransitionTimerMax/2) {
+                //sprite[0].alpha = 0
             }
         } else if(GameState.playerState == "respawning") {
             updateDeathEffect()
@@ -170,6 +174,25 @@ class Player: Entity {
             }
             
             let c = UIColor(red: CGFloat(colorArray[0]) / 255.0, green: CGFloat(colorArray[1]) / 255.0, blue: CGFloat(colorArray[2]) / 255.0, alpha: 1.0)
+            return c
+        }
+    }
+    
+    func getColor(colIndex: Int) -> [CGFloat] {
+        if(colIndex == -1) {
+            let blockVariation = 0//rand()*Double(Board.colorVariation)
+            
+            let c = [1.0-(CGFloat(blockVariation)/255.0), 1.0-(CGFloat(blockVariation)/255.0), 1.0-(CGFloat(blockVariation)/255.0)]
+            return c
+        } else {
+            let blockVariation = 0//(Board.colorVariation/2.0) - (rand()*Board.colorVariation)
+            var colorArray = ColorTheme.colors[Board.colorTheme][colIndex]
+            
+            for index in 0 ... 2 {
+                colorArray[index] = max(min(colorArray[index] + Int(blockVariation), 255), 0)
+            }
+            
+            let c = [CGFloat(colorArray[0]) / 255.0, CGFloat(colorArray[1]) / 255.0, CGFloat(colorArray[2]) / 255.0]
             return c
         }
     }

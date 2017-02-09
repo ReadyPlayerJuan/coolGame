@@ -84,7 +84,7 @@ class StageSet1 {
                         [1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 4, 4, 0, 0, 1],
                         [1, 0, 0, 0, 0, 0,013,0, 1,-9,-9, 1, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
-            otherEntities.append(MovingBlock.init(color: 0, dir: 0, xPos: 2, yPos: 1))
+            //otherEntities.append(MovingBlock.init(color: 0, dir: 0, xPos: 2, yPos: 1))
             spawnPoint = CGPoint(x: 4, y: 6);
             exitTargets = [[16, 4, 0]]
             name = "colorful creations"; break
