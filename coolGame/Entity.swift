@@ -16,6 +16,7 @@ class Entity {
     var collidesWithType = [0]
     var collisionPriority = 0
     var drawPriority = 0
+    var isDangerous = false
     
     var name = ""
     

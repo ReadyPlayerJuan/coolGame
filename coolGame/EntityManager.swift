@@ -65,8 +65,8 @@ class EntityManager {
                     node.addChild(sprite)
                 }
             }
-        } else {
-            
+        } else if(name == "player") {
+            node.addChild(EntityManager.getPlayer()!.sprite[0])
         }
     }
     

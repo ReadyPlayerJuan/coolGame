@@ -16,7 +16,10 @@ class Block: Entity {
     var solid: Bool = true
     var direction: Int = 0
     var color: UIColor = UIColor.purple
-    var dangerous = false
+    
+    var hazardCycle = 15.0
+    var colorProgressionBase = 0.0
+    var previousColorProgression = 0.0
     
     var exitTarget: Int?
     
@@ -81,6 +84,8 @@ class Block: Entity {
             colorIndex2 = -1
             direction = -1
             collisionType = 0
+            isDangerous = true
+            colorProgressionBase = x + y
             break
         default: //white solid block
             solid = true
@@ -122,11 +127,10 @@ class Block: Entity {
         //col = color
     }
     
-    /*
     override func update(delta: TimeInterval) {
         super.update(delta: delta)
         updateSprite()
-    }*/
+    }
     
     override func updateSprite() {
         if(type == 4) {
@@ -146,11 +150,45 @@ class Block: Entity {
             
             sprite[1].fillColor = otherColor
             //sprite[1]
+        } else if(type == 6) {
+            //let sign = (1 - ((Board.direction % 2) * 2))
+            var c = colorProgressionBase + (EntityManager.getPlayer()! as! Player).movementTotal + (GameState.time / (2 * hazardCycle))
+            
+            if(GameState.state == "rotating") {
+                let ang = abs(GameState.getRotationValue()) / (3.14159 / 2)
+                c += hazardCycle * (1-ang)
+            } else if(GameState.state == "resetting stage") {
+                let ang = abs(GameState.getDeathRotation()) / (3.14159 / 2)
+                c += hazardCycle * (1-ang) * ((Double(GameState.deathTimerMax) / Double(GameState.rotateTimerMax)) / 2.0)
+            }
+            
+            let colorProgression = abs((remainder(c, hazardCycle) + (hazardCycle/2.0)) / hazardCycle) + (GameState.time / (2 * hazardCycle))
+            
+            var r = remainder(colorProgression + 0.0, 1.0) + 0.5
+            var g = remainder(colorProgression + 0.333, 1.0) + 0.5
+            var b = remainder(colorProgression + 0.666, 1.0) + 0.5
+            r = abs((r * 2) - 1)
+            g = abs((g * 2) - 1)
+            b = abs((b * 2) - 1)
+            
+            let flickerTogether = true || false
+            var rand = 0.0
+            if(!flickerTogether) {
+                rand = self.rand()
+            } else {
+                rand = GameState.globalRand
+            }
+            let flicker = (1 * (pow(rand * 0.9, 4) - 0.5) / 2) + 0.2
+            r = min(1.0, max(0.0, r + flicker))
+            g = min(1.0, max(0.0, g + flicker))
+            b = min(1.0, max(0.0, b + flicker))
+            
+            sprite[0].fillColor = UIColor.init(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
         }
     }
     
     override func loadSprite() {
-        if(type == 0 || type == 1 || type == 2 || type == 5) {
+        if(type == 0 || type == 1 || type == 2 || type == 5 || type == 6) {
             let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+0), height: Double(Board.blockSize+0)))
             s.position = CGPoint(x: x*Double(Board.blockSize), y: -y*Double(Board.blockSize))
             s.fillColor = color

@@ -37,6 +37,9 @@
 		71BB81281E244C1200024D90 /* Stage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB81271E244C1200024D90 /* Stage.swift */; };
 		71BB812A1E244F6900024D90 /* StageSet1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB81291E244F6900024D90 /* StageSet1.swift */; };
 		71BB812C1E248E2B00024D90 /* StageSet2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB812B1E248E2B00024D90 /* StageSet2.swift */; };
+		71C37B1A1E281E32001F1810 /* PlayerCCEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C37B191E281E31001F1810 /* PlayerCCEffect.swift */; };
+		71C37B1C1E281ED5001F1810 /* PlayerDeathEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C37B1B1E281ED5001F1810 /* PlayerDeathEffect.swift */; };
+		71C37B1E1E2AAC40001F1810 /* PlayerMovement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71C37B1D1E2AAC40001F1810 /* PlayerMovement.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +96,9 @@
 		71BB81271E244C1200024D90 /* Stage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stage.swift; sourceTree = "<group>"; };
 		71BB81291E244F6900024D90 /* StageSet1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StageSet1.swift; sourceTree = "<group>"; };
 		71BB812B1E248E2B00024D90 /* StageSet2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StageSet2.swift; sourceTree = "<group>"; };
+		71C37B191E281E31001F1810 /* PlayerCCEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerCCEffect.swift; sourceTree = "<group>"; };
+		71C37B1B1E281ED5001F1810 /* PlayerDeathEffect.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerDeathEffect.swift; sourceTree = "<group>"; };
+		71C37B1D1E2AAC40001F1810 /* PlayerMovement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerMovement.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +224,9 @@
 				71BB80C91E2039E700024D90 /* AppDelegate.swift */,
 				71BB81051E203B5300024D90 /* GameState.swift */,
 				71BB810B1E203B5300024D90 /* Player.swift */,
+				71C37B1D1E2AAC40001F1810 /* PlayerMovement.swift */,
+				71C37B191E281E31001F1810 /* PlayerCCEffect.swift */,
+				71C37B1B1E281ED5001F1810 /* PlayerDeathEffect.swift */,
 				71BB80FD1E203B5300024D90 /* Block.swift */,
 				71BB810A1E203B5300024D90 /* MovingBlock.swift */,
 				71BB81061E203B5300024D90 /* InputController.swift */,
@@ -401,6 +410,7 @@
 				71BB81141E203B5300024D90 /* EntityManager.swift in Sources */,
 				71BB80D01E2039E700024D90 /* GameScene.swift in Sources */,
 				71BB811C1E203B5300024D90 /* ShapeLayer.swift in Sources */,
+				71C37B1C1E281ED5001F1810 /* PlayerDeathEffect.swift in Sources */,
 				71BB81191E203B5300024D90 /* MenuViewController.swift in Sources */,
 				71BB811B1E203B5300024D90 /* Player.swift in Sources */,
 				71BB810D1E203B5300024D90 /* Block.swift in Sources */,
@@ -414,8 +424,10 @@
 				71BB81131E203B5300024D90 /* Entity.swift in Sources */,
 				71BB80D21E2039E700024D90 /* GameViewController.swift in Sources */,
 				71BB81111E203B5300024D90 /* EditorScene.swift in Sources */,
+				71C37B1E1E2AAC40001F1810 /* PlayerMovement.swift in Sources */,
 				71BB80CA1E2039E700024D90 /* AppDelegate.swift in Sources */,
 				71BB81151E203B5300024D90 /* GameState.swift in Sources */,
+				71C37B1A1E281E32001F1810 /* PlayerCCEffect.swift in Sources */,
 				71BB812A1E244F6900024D90 /* StageSet1.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

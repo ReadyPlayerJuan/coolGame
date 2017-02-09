@@ -60,6 +60,8 @@ class Board {
                     blocks[row][col] = Block.init(blockType: temp[row][col], color: -1, secondaryColor: -1, dir: -1, x: Double(col), y: Double(row))
                 } else if(temp[row][col] < 10 && temp[row][col] > 1) {
                     blocks[row][col] = Block.init(blockType: 2, color: temp[row][col]-2, secondaryColor: -1, dir: -1, x: Double(col), y: Double(row))
+                } else if(temp[row][col] == 99) {
+                    blocks[row][col] = Block.init(blockType: 6, color: -1, secondaryColor: -1, dir: -1, x: Double(col), y: Double(row))
                 } else if(temp[row][col] >= 10) {
                     let s = temp[row][col]
                     let direction = Int(Double(s)/100.0)
@@ -111,8 +113,14 @@ class Board {
                 entity.yVel = temp
                 
                 entity.loadSprite()
+                entity.updateSprite()
             }
             EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
+            
+            let p = (EntityManager.getPlayer()! as! Player)
+            var tempVels = [p.prevXVel, p.prevYVel]
+            p.prevXVel = -tempVels[1]!
+            p.prevYVel = tempVels[0]
             
             blocks = temp
          } else {
@@ -141,11 +149,33 @@ class Board {
                 entity.yVel = temp * -1
                 
                 entity.loadSprite()
+                entity.updateSprite()
             }
             EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
             
+            let p = (EntityManager.getPlayer()! as! Player)
+            var tempVels = [p.prevXVel, p.prevYVel]
+            p.prevXVel = tempVels[1]
+            p.prevYVel = -tempVels[0]!
+            
             blocks = temp
          }
+    }
+    
+    class func rotatePoint(_ point: CGPoint, clockwise: Bool) -> CGPoint {
+        if(clockwise) {
+            var tempCoords = [Double(point.x), Double(point.y)]
+            var tempPoint = CGPoint()
+            tempPoint.x = CGFloat(Double(blocks.count-1)-tempCoords[1])
+            tempPoint.y = CGFloat(tempCoords[0])
+            return tempPoint
+        } else {
+            var tempCoords = [Double(point.x), Double(point.y)]
+            var tempPoint = CGPoint()
+            tempPoint.x = CGFloat(tempCoords[1])
+            tempPoint.y = CGFloat(Double(blocks[0].count-1)-tempCoords[0])
+            return tempPoint
+        }
     }
     
     private class func newEmptyArray(width: Int, height: Int) -> [[Block?]] {
@@ -165,12 +195,13 @@ class Board {
         let stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0,-11,0, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1],
-                        [1, 0, 0, 2, 2, 0, 0, 0, 4, 0, 1],
+                        [1, 0, 0,99,99, 0, 0, 0, 4, 0, 1],
                         [1, 0, 0, 0, 0, 0, 3, 0, 4, 0, 1],
                         [1, 0, 0, 0, 0, 0, 3, 0, 4,113,1],
-                        [1, 0,-21,3, 2, 0, 3, 0, 4,112,1],
+                        [1, 0,-21,3, 0, 0, 3, 0, 4,112,1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [99,99,99,99,99,99,99,99,99,99,99] ]
         let spawnPoint = CGPoint(x: 1, y: 6)
         let exitTargets = [[2, 6, 0], [8, 1, 1]]
         let otherEntities = [MovingBlock.init(color: 1, dir: 1, xPos: 3, yPos: 5)]
