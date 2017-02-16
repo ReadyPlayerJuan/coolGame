@@ -40,8 +40,12 @@ class MovingBlock: Entity {
         loadSprite()
     }
     
+    override func duplicate() -> Entity {
+        return MovingBlock.init(color: colorIndex, dir: direction, xPos: x, yPos: y)
+    }
+    
     override func update(delta: TimeInterval) {
-        if(GameState.playerState == "free" || GameState.playerState == "rotating") {
+        if(GameState.playerState == "free" || GameState.playerState == "rotating" || GameState.playerState == "changing color") {
             if((Board.direction + direction) % 2 == 0) {
                 yVel += GameState.gravity * delta
             }
@@ -78,7 +82,7 @@ class MovingBlock: Entity {
     
     override func checkForCollision(with: [Entity]) {
         for entity in with {
-            if(entityCollides(this: self, with: entity)) {
+            if(Entity.collides(this: self, with: entity)) {
                 if(entity.name == "block") {
                     let colAcc = 0.001
                     

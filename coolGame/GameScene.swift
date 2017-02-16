@@ -27,8 +27,9 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
         mainView = view
-        
         beginGame()
+        
+        //UIPasteboard.general.string = "Hello world"
     }
     
     func beginGame() {

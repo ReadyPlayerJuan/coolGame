@@ -24,29 +24,33 @@ class Board {
     
     static var stageNum = -1
     
-    static let blackBlockCategory: UInt32 = UInt32(exactly: 0)!
-    static let whiteBlockCategory: UInt32 = UInt32(exactly: 1)!
-    static let playerCategory: UInt32 = UInt32(exactly: 99)!
+    //static let blackBlockCategory: UInt32 = UInt32(exactly: 0)!
+    //static let whiteBlockCategory: UInt32 = UInt32(exactly: 1)!
+    //static let playerCategory: UInt32 = UInt32(exactly: 99)!
     
     static let gray = CGFloat(0.15)
     static let backgroundColor = UIColor.init(red: gray, green: gray, blue: gray, alpha: 1.0)
     
     class func nextStage() {
-        if(currentStage == nil) {
-            loadAllStages()
-            currentStage = hubStage
+        if(GameState.inEditor) {
+            currentStage = Stage.loadStage(code: Memory.getStageEdit())
         } else {
-            if(currentStage?.children.count != 0) {
-                currentStage = currentStage?.children[GameState.exitTarget]
-            } else {
+            if(currentStage == nil) {
+                loadAllStages()
                 currentStage = hubStage
+            } else {
+                if(currentStage?.children.count != 0) {
+                    currentStage = currentStage?.children[GameState.exitTarget]
+                } else {
+                    currentStage = hubStage
+                }
             }
         }
         
+        direction = 0
         let temp: [[Int]]! = currentStage?.blocks
         spawnPoint = currentStage?.spawnPoint
-        otherEntities = (currentStage?.otherEntities)!
-        direction = 0
+        otherEntities = (currentStage?.getEntities())!
         
         //Player.reset()
         
@@ -82,11 +86,6 @@ class Board {
         }
     }
     
-    class func loadFreshStage() {
-        stageNum = -2
-        nextStage()
-    }
-    
     class func rotate() {
          if(GameState.rotateDirection == "right") {
             direction += 1
@@ -119,7 +118,7 @@ class Board {
             
             let p = (EntityManager.getPlayer()! as! Player)
             var tempVels = [p.prevXVel, p.prevYVel]
-            p.prevXVel = -tempVels[1]!
+            p.prevXVel = -tempVels[1]
             p.prevYVel = tempVels[0]
             
             blocks = temp
@@ -156,7 +155,7 @@ class Board {
             let p = (EntityManager.getPlayer()! as! Player)
             var tempVels = [p.prevXVel, p.prevYVel]
             p.prevXVel = tempVels[1]
-            p.prevYVel = -tempVels[0]!
+            p.prevYVel = -tempVels[0]
             
             blocks = temp
          }
@@ -194,8 +193,8 @@ class Board {
     private class func loadAllStages() {
         let stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0,-11,0, 1],
-                        [1,-41,0, 0, 0, 0, 0, 0, 3,99, 1],
-                        [1, 0, 0,99,99, 0, 0, 0, 4, 0, 1],
+                        [1,-41,99,99,0, 0, 0, 0, 3,99, 1],
+                        [1, 0, 0, 0,99, 0, 0, 0, 4, 0, 1],
                         [1, 0, 0, 0, 0, 0, 3, 0, 4, 0, 1],
                         [1, 0, 0, 0, 0, 0, 0, 3, 4,113,1],
                         [1, 0, 0, 3, 0, 0, 3, 0, 4,112,1],
@@ -204,7 +203,7 @@ class Board {
                         [99,99,99,99,99,99,99,99,99,99,99] ]
         let spawnPoint = CGPoint(x: 1, y: 6)
         let exitTargets = [[1, 2, 0], [8, 1, 1]]
-        let otherEntities = [MovingBlock.init(color: 1, dir: 1, xPos: 3, yPos: 5)]
+        let otherEntities = [MovingBlock.init(color: 1, dir: 1, xPos: 3, yPos: 5)]//, LightSource.init(type: 1, xPos: 2.5, yPos: 4.5)]
         
         hubStage = Stage.init(withBlocks: stage, entities: otherEntities, spawn: spawnPoint, withName: "hub", exits: exitTargets)
         StageSet1.loadStages(base: hubStage)

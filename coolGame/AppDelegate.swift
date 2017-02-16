@@ -53,6 +53,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 extension String {
+    func length() -> Int {
+        return self.characters.count
+    }
+    
     func charAt(_ i: Int) -> String {
         let start = self.index(self.startIndex, offsetBy: i)
         let end = self.index(self.startIndex, offsetBy: i+1)

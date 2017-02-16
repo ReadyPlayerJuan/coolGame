@@ -80,19 +80,17 @@ extension Player {
         jumping = false
         
         for t in InputController.currentTouches {
-            if(t != nil) {
-                //jump if touched top half of the screen
-                if(t!.y > 0) {
-                    jumping = true
-                    
-                    //move left if touched bottom left
-                } else if(t!.x < 0) {
-                    movingLeft = true
-                    
-                    //move right if touched bottom right
-                } else {
-                    movingRight = true
-                }
+            //jump if touched top half of the screen
+            if(t.y > 0) {
+                jumping = true
+                
+                //move left if touched bottom left
+            } else if(t.x < 0) {
+                movingLeft = true
+                
+                //move right if touched bottom right
+            } else {
+                movingRight = true
             }
         }
     }
@@ -109,19 +107,17 @@ extension Player {
             if(GameState.playerState == "free") {
                 if(x == Double(Int(x)) && y == Double(Int(y)) && xVel == 0 && yVel == 0) {
                     for t in InputController.currentTouches {
-                        if(t != nil) {
-                            if(t!.y < 0) {
-                                if(t!.x < 0 && canHingeLeft) {
-                                    GameState.playerState = "rotating"
-                                    GameState.hingeDirection = "left"
-                                    rotationVel = 0.1
-                                    rotation = 0.0
-                                } else if(t!.x >= 0 && canHingeRight) {
-                                    GameState.playerState = "rotating"
-                                    GameState.hingeDirection = "right"
-                                    rotationVel = -0.1
-                                    rotation = 0.0
-                                }
+                        if(t.y < 0) {
+                            if(t.x < 0 && canHingeLeft) {
+                                GameState.playerState = "rotating"
+                                GameState.hingeDirection = "left"
+                                rotationVel = 0.1
+                                rotation = 0.0
+                            } else if(t.x >= 0 && canHingeRight) {
+                                GameState.playerState = "rotating"
+                                GameState.hingeDirection = "right"
+                                rotationVel = -0.1
+                                rotation = 0.0
                             }
                         }
                     }
@@ -137,7 +133,7 @@ extension Player {
             if(entity.name == "block" || entity.name == "moving block") {
                 
                 //make sure the player is able to collide with the current block or moving block by the collision rules defined by entity class
-                if(entityCollides(this: self, with: entity)) {
+                if(Entity.collides(this: self, with: entity)) {
                     
                     let colAcc = 0.001
                     
@@ -180,7 +176,7 @@ extension Player {
             if(entity.name == "block" || entity.name == "moving block") {
                 
                 //make sure the player is able to collide with the current block or moving block by the collision rules defined by entity class
-                if(entityCollides(this: self, with: entity)) {
+                if(Entity.collides(this: self, with: entity)) {
                     var xMod = 0.0
                     var yMod = 0.0
                     
@@ -191,34 +187,36 @@ extension Player {
                     for posInEdge in stride(from: 0.0, through: 1.0, by: (1.0 / step)) {
                         xMod = posInEdge/2
                         yMod = posInEdge * (sqrt(3.0) / -2.0)
-                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + xMod), y: (nextY + yMod - colAcc))) && entity.nextX + 0.5 < x) {
-                            nextX = entity.nextX + 1 - xMod
-                            if(posInEdge <= 2.0 / step) {
-                                nextX = entity.nextX + 1
-                                if(entity.nextX == Double(Int(entity.nextX)) && entity.nextY == Double(Int(entity.nextY))) {
-                                    canHingeLeft = true
-                                }
-                            }
-                            xVel = 0
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + xMod + colAcc), y: (nextY + yMod - colAcc))) && entity.nextX + 0.5 < x) {
                             
                             if(entity.isDangerous) {
                                 GameState.gameAction(type: "kill player")
+                            } else {
+                                nextX = entity.nextX + 1 - xMod
+                                if(posInEdge <= 2.0 / step) {
+                                    nextX = entity.nextX + 1
+                                    if(entity.nextX == Double(Int(entity.nextX)) && entity.nextY == Double(Int(entity.nextY))) {
+                                        canHingeLeft = true
+                                    }
+                                }
                             }
+                            xVel = 0
                             //print(" hit edge, with block at \(Int(entity.nextX)), \(Int(entity.nextY))  xmod = \(xMod)")
                         }
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + 1 - xMod - colAcc), y: (nextY + yMod - colAcc))) && entity.nextX + 0.5 > x) {
-                            nextX = entity.nextX - 1 + xMod
-                            if(posInEdge <= 2.0 / step) {
-                                nextX = entity.nextX - 1
-                                if(entity.nextX == Double(Int(entity.nextX)) && entity.nextY == Double(Int(entity.nextY))) {
-                                    canHingeRight = true
-                                }
-                            }
-                            xVel = 0
                             
                             if(entity.isDangerous) {
                                 GameState.gameAction(type: "kill player")
+                            } else {
+                                nextX = entity.nextX - 1 + xMod
+                                if(posInEdge <= 2.0 / step) {
+                                    nextX = entity.nextX - 1
+                                    if(entity.nextX == Double(Int(entity.nextX)) && entity.nextY == Double(Int(entity.nextY))) {
+                                        canHingeRight = true
+                                    }
+                                }
                             }
+                            xVel = 0
                             //print(" hit edge, with block at \(Int(entity.nextX)), \(Int(entity.nextY))  xmod = \(xMod)")
                         }
                         //print("  \(nextX) - \(nextY)")

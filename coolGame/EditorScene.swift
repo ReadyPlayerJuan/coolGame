@@ -11,16 +11,75 @@ import SpriteKit
 import GameplayKit
 
 class EditorScene: SKScene {
+    
+    var drawNode: SKShapeNode!
+    var rotateNode: SKShapeNode!
+    var superNode: SKShapeNode!
+    
     static let screenHeight = UIScreen.main.fixedCoordinateSpace.bounds.width
     static let screenWidth = UIScreen.main.fixedCoordinateSpace.bounds.height
     
-    var colorIndex = 1
+    var delta = 0.0
     
     var mainView: SKView!
+    var prevTime = 0.0
+    var firstFrame = true
     
     override func didMove(to view: SKView) {
         mainView = view
+        beginGame()
+        
+        //UIPasteboard.general.string = "Hello world"
+    }
+    
+    func beginGame() {
         backgroundColor = Board.backgroundColor
+        
+        //configure main layer
+        /*
+         rotateLayer = CALayer()
+         drawLayer = CALayer()
+         
+         rotateLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+         rotateLayer.position = CGPoint(x: GameScene.screenWidth/2.0, y: GameScene.screenHeight/2.0)
+         rotateLayer.bounds = CGRect(x: 0.0, y: 0.0, width: GameScene.screenWidth, height: GameScene.screenHeight)
+         mainView.layer.addSublayer(rotateLayer)
+         
+         rotateLayer.addSublayer(drawLayer)
+         
+         GameState.gamescene = self
+         GameState.drawLayer = drawLayer
+         GameState.rotateLayer = rotateLayer*/
+        
+        GameState.editorscene = self
+        
+        superNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        superNode.strokeColor = UIColor.clear
+        superNode.fillColor = UIColor.clear
+        drawNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        drawNode.strokeColor = UIColor.clear
+        drawNode.fillColor = UIColor.clear
+        rotateNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        rotateNode.strokeColor = UIColor.clear
+        rotateNode.fillColor = UIColor.clear
+        
+        addChild(superNode)
+        superNode.addChild(rotateNode)
+        rotateNode.addChild(drawNode)
+        
+        EditorManager.drawNode = superNode
+        EditorManager.initElements()
+        
+        GameState.drawNode = drawNode
+        GameState.rotateNode = rotateNode
+        
+        if(Memory.getStageEdit() == "no stage") {
+            Memory.saveStageEdit(code: "b1.1.1.1.1,1.0.0.0.1,1.0.0.0.1,1.0.0.-11.1,1.1.1.1.1es1.3ex3.3.0emtestName")
+        }
+        
+        GameState.currentlyEditing = true
+        GameState.inEditor = true
+        GameState.beginEditorStage()
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -40,5 +99,12 @@ class EditorScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
+        if(firstFrame) {
+            firstFrame = false
+            prevTime = currentTime
+        }
+        
+        GameState.update(delta: currentTime - prevTime)
+        prevTime = currentTime
     }
 }

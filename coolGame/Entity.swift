@@ -31,6 +31,10 @@ class Entity {
         ID = EntityManager.getID()
     }
     
+    func duplicate() -> Entity {
+        return Entity.init()
+    }
+    
     func update(delta: TimeInterval) {
         nextX = x + xVel
         nextY = y + yVel
@@ -42,12 +46,12 @@ class Entity {
         updateSprite()
     }
     
-    func entityCollides(this: Entity, with: Entity) -> Bool {
+    static func collides(this: Entity, with: Entity) -> Bool {
         return (arrayContains(array: this.collidesWithType, number: with.collisionType))
             //|| arrayContains(array: with.collidesWithType, number: this.collisionType))
     }
     
-    private func arrayContains(array: [Int], number: Int) -> Bool {
+    private static func arrayContains(array: [Int], number: Int) -> Bool {
         for i in array {
             if(i == number) {
                 return true

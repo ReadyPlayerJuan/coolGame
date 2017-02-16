@@ -37,8 +37,8 @@ class Player: Entity {
     var deathParticles: [SKShapeNode] = []
     var deathParticleInfo: [[Double]] = [[]]
     var deathParticleColor: UIColor = UIColor.clear
-    var prevXVel: Double!
-    var prevYVel: Double!
+    var prevXVel: Double = 0.0
+    var prevYVel: Double = 0.0
     
     override init() {
         super.init()
@@ -203,6 +203,9 @@ class Player: Entity {
     
     override func move() {
         movementTotal += hypot(x - nextX, y - nextY)
+        
+        GameState.playerX = nextX
+        GameState.playerY = nextY
         
         super.move()
     }

@@ -111,7 +111,7 @@ class StageSet1 {
                         [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
             spawnPoint = CGPoint(x: 2, y: 6);
             exitTargets = [[15, 15, 0]]
-            name = "room-filled riddle"; break
+            name = "roomy riddle"; break
         case 4:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],

@@ -132,6 +132,14 @@ class EntityManager {
         return nil
     }
     
+    static func loadLightSources() {
+        for e in entities {
+            if(e.name == "light source") {
+                (e as! LightSource).loadStageInfo()
+            }
+        }
+    }
+    
     static func getID() -> Int {
         nextID += 1
         return nextID

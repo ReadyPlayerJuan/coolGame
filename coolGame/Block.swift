@@ -69,7 +69,11 @@ class Block: Entity {
             colorIndex = color
             colorIndex2 = -1
             direction = dir
-            collisionType = -1
+            if(colorIndex == -1) {
+                collisionType = -1
+            } else {
+                collisionType = colorIndex + 10
+            }
             break
         case 5: //empty filler block
             solid = true
