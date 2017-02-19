@@ -15,6 +15,7 @@ class EditorScene: SKScene {
     var drawNode: SKShapeNode!
     var rotateNode: SKShapeNode!
     var superNode: SKShapeNode!
+    var editorNode: SKShapeNode!
     
     static let screenHeight = UIScreen.main.fixedCoordinateSpace.bounds.width
     static let screenWidth = UIScreen.main.fixedCoordinateSpace.bounds.height
@@ -52,6 +53,7 @@ class EditorScene: SKScene {
          GameState.rotateLayer = rotateLayer*/
         
         GameState.editorscene = self
+        EditorManager.editorScene = self
         
         superNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
         superNode.strokeColor = UIColor.clear
@@ -62,23 +64,25 @@ class EditorScene: SKScene {
         rotateNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
         rotateNode.strokeColor = UIColor.clear
         rotateNode.fillColor = UIColor.clear
+        editorNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        editorNode.strokeColor = UIColor.clear
+        editorNode.fillColor = UIColor.clear
         
+        removeAllChildren()
         addChild(superNode)
         superNode.addChild(rotateNode)
+        superNode.addChild(editorNode)
         rotateNode.addChild(drawNode)
         
-        EditorManager.drawNode = superNode
-        EditorManager.initElements()
+        EditorManager.drawNode = editorNode
         
         GameState.drawNode = drawNode
         GameState.rotateNode = rotateNode
         
         if(Memory.getStageEdit() == "no stage") {
-            Memory.saveStageEdit(code: "b1.1.1.1.1,1.0.0.0.1,1.0.0.0.1,1.0.0.-11.1,1.1.1.1.1es1.3ex3.3.0emtestName")
+            Memory.saveStageEdit(code: Stage.defaultStage)
         }
         
-        GameState.currentlyEditing = true
-        GameState.inEditor = true
         GameState.beginEditorStage()
     }
     

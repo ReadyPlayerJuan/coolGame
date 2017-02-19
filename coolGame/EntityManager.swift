@@ -70,6 +70,30 @@ class EntityManager {
         }
     }
     
+    static func reloadBlocks() {
+        var temp = [Entity]()
+        for e in entities {
+            if(e.name != "block") {
+                temp.append(e)
+            }
+        }
+        entities = temp
+        
+        for row in 0 ... Board.blocks.count-1 {
+            for col in 0 ... Board.blocks[0].count-1 {
+                addEntity(entity: Board.blocks[row][col]!)
+            }
+        }
+    }
+    
+    static func reloadAllEntities() {
+        for e in entities {
+            e.removeSpriteFromParent()
+            e.loadSprite()
+        }
+        redrawEntities(node: GameState.drawNode, name: "all")
+    }
+    
     static func getEntitiesNear(entity: Entity, radius: Double) -> [Entity] {
         var temp = [Entity]()
         

@@ -14,7 +14,7 @@ class InputController {
     static var prevTouches = [CGPoint]()
     static var currentTouches = [CGPoint]()
     
-    static let maxTouchLeniency = CGFloat(100.0)
+    static let maxTouchLeniency = CGFloat(50.0)
     
     static func resetTouches() {
         currentTouches = [CGPoint]()
@@ -29,10 +29,12 @@ class InputController {
     
     static func touchesMoved(_ touches: Set<UITouch>, node: SKNode) {
         for t in touches {
-            for i in 0...currentTouches.count-1 {
-                let ct = currentTouches[i]
-                if(hypot(t.previousLocation(in: node).x-(ct.x), t.previousLocation(in: node).y-(ct.y)) < maxTouchLeniency) {
-                    currentTouches[i] = t.location(in: node)
+            if(currentTouches.count > 0) {
+                for i in 0...currentTouches.count-1 {
+                    let ct = currentTouches[i]
+                    if(hypot(t.previousLocation(in: node).x-(ct.x), t.previousLocation(in: node).y-(ct.y)) < maxTouchLeniency) {
+                        currentTouches[i] = t.location(in: node)
+                    }
                 }
             }
         }
@@ -41,15 +43,17 @@ class InputController {
     static func touchesEnded(_ touches: Set<UITouch>, node: SKNode) {
         for t in touches {
             var remove = [Int]()
-            for i in 0...currentTouches.count-1 {
-                let ct = currentTouches[i]
-                if(hypot(t.location(in: node).x-(ct.x), t.location(in: node).y-(ct.y)) < maxTouchLeniency) {
-                    remove.insert(i, at: 0)
+            if(currentTouches.count > 0) {
+                for i in 0...currentTouches.count-1 {
+                    let ct = currentTouches[i]
+                    if(hypot(t.location(in: node).x-(ct.x), t.location(in: node).y-(ct.y)) < maxTouchLeniency) {
+                        remove.insert(i, at: 0)
+                    }
                 }
-            }
-            for i in remove {
-                if(i < currentTouches.count) {
-                    currentTouches.remove(at: i)
+                for i in remove {
+                    if(i < currentTouches.count) {
+                        currentTouches.remove(at: i)
+                    }
                 }
             }
         }
@@ -58,15 +62,17 @@ class InputController {
     static func touchesCancelled(_ touches: Set<UITouch>, node: SKNode) {
         for t in touches {
             var remove = [Int]()
-            for i in 0...currentTouches.count-1 {
-                let ct = currentTouches[i]
-                if(hypot(t.location(in: node).x-(ct.x), t.location(in: node).y-(ct.y)) < maxTouchLeniency) {
-                    remove.insert(i, at: 0)
+            if(currentTouches.count > 0) {
+                for i in 0...currentTouches.count-1 {
+                    let ct = currentTouches[i]
+                    if(hypot(t.location(in: node).x-(ct.x), t.location(in: node).y-(ct.y)) < maxTouchLeniency) {
+                        remove.insert(i, at: 0)
+                    }
                 }
-            }
-            for i in remove {
-                if(i < currentTouches.count) {
-                    currentTouches.remove(at: i)
+                for i in remove {
+                    if(i < currentTouches.count) {
+                        currentTouches.remove(at: i)
+                    }
                 }
             }
         }

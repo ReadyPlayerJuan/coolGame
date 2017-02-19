@@ -224,7 +224,7 @@ extension Player {
                 } else {
                     if(entity.name == "block" && ((entity as! Block).type == 3 || (entity as! Block).type == 4) && Board.direction == (entity as! Block).direction) {
                         let b = entity as! Block
-                        if(nextY == Double(Int(nextY)) && y == entity.y && ((x <= entity.x && nextX >= entity.x) || (x >= entity.x && nextX <= entity.x))) {
+                        if(nextY == Double(Int(nextY)) && y == entity.y && ((x <= entity.x && nextX >= entity.x) || (x >= entity.x && nextX <= entity.x)) && Entity.collides(this: self, with: Board.blocks[Int(y+1)][Int(nextX)]!)) {
                             if(b.type == 3 && b.colorIndex2 != colorIndex) {
                                 nextX = entity.nextX
                                 xVel = 0

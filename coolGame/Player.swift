@@ -68,7 +68,7 @@ class Player: Entity {
         color = loadColor(colIndex: colorIndex)
         newColor = loadColor(colIndex: newColorIndex)
         
-        if(GameState.time > 0.5 && !(GameState.state == "stage transition")) {
+        if(GameState.time > 0.5 && !GameState.inEditor && !(GameState.state == "stage transition")) {
             sprite[0].removeFromParent()
             loadSprite()
             EntityManager.redrawEntities(node: GameState.drawNode, name: "player")
@@ -108,19 +108,49 @@ class Player: Entity {
     }
     
     override func loadSprite() {
-        for each in sprite {
-            each.removeFromParent()
+        if(GameState.currentlyEditing) {
+            let path1 = UIBezierPath.init()
+            let size = 0.05
+            path1.move(to: CGPoint(x: 0, y: Double(Board.blockSize)*size))
+            path1.addLine(to: CGPoint(x: Double(Board.blockSize)*size, y: 0))
+            path1.addLine(to: CGPoint(x: Double(Board.blockSize)*(1), y: Double(Board.blockSize)*(1-size)))
+            path1.addLine(to: CGPoint(x: Double(Board.blockSize)*(1-size), y: Double(Board.blockSize)*(1)))
+            
+            let line1 = SKShapeNode.init(path: path1.cgPath)
+            line1.fillColor = UIColor.red
+            line1.strokeColor = UIColor.clear
+            line1.zPosition = 50
+            
+            let path2 = UIBezierPath.init()
+            path2.move(to: CGPoint(x: Double(Board.blockSize), y: Double(Board.blockSize)*size))
+            path2.addLine(to: CGPoint(x: Double(Board.blockSize)*(1-size), y: 0))
+            path2.addLine(to: CGPoint(x: Double(Board.blockSize)*(0), y: Double(Board.blockSize)*(1-size)))
+            path2.addLine(to: CGPoint(x: Double(Board.blockSize)*(size), y: Double(Board.blockSize)*(1)))
+            
+            let line2 = SKShapeNode.init(path: path2.cgPath)
+            line2.fillColor = UIColor.red
+            line2.strokeColor = UIColor.clear
+            
+            line1.position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
+            sprite = [line1]
+            line1.addChild(line2)
+        } else {
+            for each in sprite {
+                each.removeFromParent()
+            }
+            let temp = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: 0.0, size: Double(Board.blockSize)))
+            temp.fillColor = color
+            temp.strokeColor = UIColor.clear
+            temp.position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
+            
+            sprite = [temp]
         }
-        let temp = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: 0.0, size: Double(Board.blockSize)))
-        temp.fillColor = color
-        temp.strokeColor = UIColor.clear
-        temp.position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
-        
-        sprite = [temp]
     }
     
     override func updateSprite() {
-        if(GameState.playerState == "free") {
+        if(GameState.currentlyEditing) {
+            
+        } else if(GameState.playerState == "free") {
             sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
             
             sprite[0].alpha = 1.0

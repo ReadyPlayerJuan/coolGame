@@ -10,13 +10,14 @@ import Foundation
 
 class Memory {
     struct stageEdit {
-        static let code = "b1.1.1.1.1,1.0.0.0.1,1.0.0.0.1,1.0.0.-11.1,1.1.1.1.1es1.3ex3.3.0emtestName"
+        static let code = Stage.defaultStage
     }
     
     class func saveStageEdit(code: String) {
         let defaults = UserDefaults.standard
         
         defaults.setValue(code, forKey: stageEdit.code)
+        print(getStageEdit())
         
         defaults.synchronize()
     }

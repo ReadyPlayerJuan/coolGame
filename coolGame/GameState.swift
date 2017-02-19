@@ -90,6 +90,10 @@ class GameState {
         currentDelta = delta
         globalRand = rand()
         
+        if(inEditor && currentlyEditing) {
+            EditorManager.update(delta: delta)
+        }
+        
         if(state == "in game") {
             if(playerState == "changing color") {
                 firstFrame = false
@@ -107,13 +111,17 @@ class GameState {
                 }
             }
             
-            EntityManager.updateEntities(delta: delta)
-            drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
+            if(!currentlyEditing) {
+                EntityManager.updateEntities(delta: delta)
+                drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
+            } else {
+                drawNode.position = CGPoint(x: -((EditorManager.camera.x + 0.5) * CGFloat(Board.blockSize)), y: ((EditorManager.camera.y - 0.5) * CGFloat(Board.blockSize)))
+            }
         } else if(state == "in menu") {
             //handled by other scenes
         } else if(state == "in editor") {
-            EditorManager.update(delta: delta)
-        }else if(state == "stage transition") {
+            
+        } else if(state == "stage transition") {
             stageTransitionTimer -= delta
             drawNode.position = CGPoint(x: (-((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize))) + Double(getStageTransitionVector().dx), y: (((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize))) + Double(getStageTransitionVector().dy))
             
@@ -121,6 +129,10 @@ class GameState {
                 Board.nextStage()
                 initEntities()
                 swappedStages = true
+                
+                if(inEditor) {
+                    beginEditorStage()
+                }
             }
             
             if(stageTransitionTimer <= 0) {
@@ -129,10 +141,6 @@ class GameState {
                 playerState = "free"
                 
                 drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
-                
-                if(inEditor && currentlyEditing) {
-                    state = "in editor"
-                }
             }
             
             EntityManager.updateEntitySprites()
@@ -235,7 +243,8 @@ class GameState {
             GameState.rotateNode.zRotation = CGFloat(GameState.getRotationValue())
             
             if(currentlyEditing) {
-                EditorManager.camera = Board.rotatePoint(EditorManager.camera, clockwise: rotateDirection == "right")
+                let p = Board.rotatePoint(CGPoint(x: EditorManager.camera.y, y: EditorManager.camera.x), clockwise: rotateDirection == "left")
+                EditorManager.camera = CGPoint(x: p.y, y: p.x)
             }
             
             EntityManager.loadLightSources()
@@ -295,11 +304,18 @@ class GameState {
     }*/
     
     class func beginEditorStage() {
+        EditorManager.initElements()
+        GameState.currentlyEditing = true
+        GameState.inEditor = true
+        
         state = "stage transition"
         stageTransitionTimer = 0
         Board.nextStage()
+        
         initEntities()
         swappedStages = true
+        
+        EditorManager.camera = CGPoint(x: Double(Board.blocks[0].count-1)/2.0, y: Double(Board.blocks.count-1)/2.0)
     }
     
     class func beginStageTransition() {

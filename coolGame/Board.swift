@@ -16,11 +16,11 @@ class Board {
     static var blocks: [[Block?]]!
     static var otherEntities: [Entity] = []
     
-    static var blockSize = 75
+    static var blockSize = 50
     static var spawnPoint: CGPoint!
     static var colorTheme = 0
     static var direction = 0
-    static let colorVariation = 25.0
+    static let colorVariation = 30.0
     
     static var stageNum = -1
     
@@ -195,8 +195,8 @@ class Board {
                         [1, 0, 0, 0, 0, 0, 0, 0,-11,0, 1],
                         [1,-41,99,99,0, 0, 0, 0, 3,99, 1],
                         [1, 0, 0, 0,99, 0, 0, 0, 4, 0, 1],
-                        [1, 0, 0, 0, 0, 0, 3, 0, 4, 0, 1],
-                        [1, 0, 0, 0, 0, 0, 0, 3, 4,113,1],
+                        [1, 0, 0, 0, 0, 0, 3, 0,342,0, 1],
+                        [1, 0, 0, 0,013, 0, 0, 3, 4,113,1],
                         [1, 0, 0, 3, 0, 0, 3, 0, 4,112,1],
                         [1, 0, 0, 3,313,0, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],

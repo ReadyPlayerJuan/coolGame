@@ -74,6 +74,14 @@ class Entity {
         return sprite
     }
     
+    func removeSpriteFromParent() {
+        for s in sprite {
+            if(s.parent != nil) {
+                s.removeFromParent()
+            }
+        }
+    }
+    
     func rand() -> Double {
         return Double(arc4random())/(pow(2.0, 32.0)-1)
     }

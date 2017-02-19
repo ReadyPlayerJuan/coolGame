@@ -10,6 +10,8 @@ import Foundation
 import SpriteKit
 
 class Stage {
+    public static let defaultStage = "b1.1.1.1.1,1.0.0.0.1,1.0.0.0.1,1.0.0.-11.1,1.1.1.1.1es1.3ex3.3.0emtestName"
+    
     var children: [Stage] = []
     var parent: Stage?
     var name: String = "Unnamed"
