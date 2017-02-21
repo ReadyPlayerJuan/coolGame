@@ -83,7 +83,7 @@ class EditorScene: SKScene {
             Memory.saveStageEdit(code: Stage.defaultStage)
         }
         
-        GameState.beginEditorStage()
+        GameState.gameAction(type: "begin editor")
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

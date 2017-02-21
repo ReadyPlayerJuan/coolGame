@@ -31,6 +31,7 @@ class Entity {
         ID = EntityManager.getID()
     }
     
+    func rotate() {}
     func duplicate() -> Entity {
         return Entity.init()
     }

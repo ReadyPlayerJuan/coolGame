@@ -16,7 +16,12 @@ class EditorManager {
     static let border = 10
     
     static var blockIconType = 0
-    static let numBlockIconTypes = 3
+    static let numBlockIconTypes = 2
+    
+    static var switchLayerButton: EditorButton!
+    static var layerNum = 0
+    static var blockLayer = SKShapeNode.init()
+    static var entityLayer = SKShapeNode.init()
     
     static var currentBlockIcon = SKShapeNode.init()
     static var menu = SKShapeNode.init()
@@ -47,6 +52,15 @@ class EditorManager {
     class func update(delta: TimeInterval) {
         EntityManager.updateEntitySprites()
         
+        
+        if(layerNum == 0) {
+            blockLayer.alpha = 1.0
+            entityLayer.alpha = 0.0
+        } else {
+            blockLayer.alpha = 0.0
+            entityLayer.alpha = 1.0
+        }
+        
         if(!rotating) {
             if(inMenu) {
                 rotateLeftButton.update(active: false, delta: delta)
@@ -64,29 +78,34 @@ class EditorManager {
                 
                 menuButtonTimer -= 1
                 if(save.action) {
-                    print(encodeStageEdit())
                     Memory.saveStageEdit(code: encodeStageEdit())
                     menuButtonTimer = menuButtonTimerMax
                 }
                 if(reset.action) {
                     Memory.saveStageEdit(code: Stage.defaultStage)
                     inMenu = false
-                    GameState.beginEditorStage()
+                    GameState.gameAction(type: "begin editor")
                     menuButtonTimer = menuButtonTimerMax
                     EntityManager.reloadAllEntities()
+                    
+                    EditorManager.camera = CGPoint(x: Double(Board.blocks[0].count-1)/2.0, y: Double(Board.blocks.count-1)/2.0)
+                    GameState.drawNode.position = CGPoint(x: -((EditorManager.camera.x + 0.5) * CGFloat(Board.blockSize)), y: ((EditorManager.camera.y - 0.5) * CGFloat(Board.blockSize)))
                 }
                 if(copyToClipboard.action) {
                     UIPasteboard.general.string = EditorManager.encodeStageEdit()
-                    copyToClipboard.sprite[1].alpha = 0.0
+                    menuButtonTimer = menuButtonTimerMax
                 }
                 if(loadFromClipboard.action) {
                     let pasteboardString: String? = UIPasteboard.general.string
                     if let theString = pasteboardString {
                         Memory.saveStageEdit(code: theString)
                         inMenu = false
-                        GameState.beginEditorStage()
+                        GameState.gameAction(type: "begin editor")
                         menuButtonTimer = menuButtonTimerMax
                         EntityManager.reloadAllEntities()
+                        
+                        EditorManager.camera = CGPoint(x: Double(Board.blocks[0].count-1)/2.0, y: Double(Board.blocks.count-1)/2.0)
+                        GameState.drawNode.position = CGPoint(x: -((EditorManager.camera.x + 0.5) * CGFloat(Board.blockSize)), y: ((EditorManager.camera.y - 0.5) * CGFloat(Board.blockSize)))
                     }
                 }
                 if(play.action) {
@@ -110,7 +129,7 @@ class EditorManager {
                 currentBlockButton.update(active: true, delta: delta)
                 settingsButton.update(active: true, delta: delta)
                 for b in colors {
-                    b.update(active: true, delta: delta)
+                    b.update(active: layerNum == 0, delta: delta)
                 }
                 
                 play.update(active: false, delta: delta)
@@ -157,7 +176,7 @@ class EditorManager {
                     }
                 }
                 
-                if(singleTouchTimer == 1 || pressedButton) {
+                if(singleTouchTimer  == 1 || pressedButton) {
                     for b in colors {
                         if(b.action) {
                             drawColor = b.colorIndex
@@ -179,10 +198,12 @@ class EditorManager {
                     if(rotateLeftButton.action) {
                         GameState.hingeDirection = "left"
                         GameState.gameAction(type: "rotate")
+                        rotating = true
                         pressedButton = true
                     } else if(rotateRightButton.action) {
                         GameState.hingeDirection = "right"
                         GameState.gameAction(type: "rotate")
+                        rotating = true
                         pressedButton = true
                     }
                     
@@ -193,84 +214,114 @@ class EditorManager {
                     }
                 }
                 
-                if(GameState.state != "rotating" && singleTouchTimer > 4 && !pressedButton && !inMenu) {
-                    for t in InputController.prevTouches {
-                        var x = Int(camera.x + (t.x / CGFloat(Board.blockSize)) + 0.5 + 500) - 500
-                        var y = Int(camera.y - (t.y / CGFloat(Board.blockSize)) + 0.5 + 500) - 500
-                        
-                        var addedBlock = false
-                        while(x < 0) {
-                            addLeftRow()
-                            x += 1
-                            camera.x += 1
-                            addedBlock = true
-                        }
-                        while(x > Board.blocks[0].count-1) {
-                            addRightRow()
-                            addedBlock = true
-                        }
-                        while(y < 0) {
-                            addTopRow()
-                            y += 1
-                            camera.y += 1
-                            addedBlock = true
-                        }
-                        while(y > Board.blocks.count-1) {
-                            addBottomRow()
-                            addedBlock = true
-                        }
-                        
-                        if(blockIconType == 0) {
-                            if(drawColor == -3) {
-                                Board.blocks[y][x] = Block.init(blockType: 5, color: -1, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
-                                addedBlock = true
-                            } else if(drawColor == -2) {
-                                Board.blocks[y][x] = Block.init(blockType: 0, color: -1, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
-                                addedBlock = true
-                            } else if(drawColor == -1) {
-                                Board.blocks[y][x] = Block.init(blockType: 1, color: -1, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
-                                addedBlock = true
-                            } else {
-                                Board.blocks[y][x] = Block.init(blockType: 2, color: drawColor, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
-                                addedBlock = true
-                            }
-                        } else if(blockIconType == 1) {
-                            if(drawColor == -3 || drawColor == -2 || drawColor == -1) {
-                                if(Board.blocks[y][x]?.type == 1 || Board.blocks[y][x]?.type == 5) {
-                                    
-                                } else if(Board.blocks[y][x]?.type == 0 || Board.blocks[y][x]?.type == 2 || Board.blocks[y][x]?.type == 3 || Board.blocks[y][x]?.type == 4) {
-                                    Board.blocks[y][x] = Block.init(blockType: 4, color: Board.blocks[y][x]!.colorIndex, secondaryColor: -1, dir: Board.direction, x: Double(x), y: Double(y))
-                                    addedBlock = true
-                                }
-                            } else {
-                                if(Board.blocks[y][x]?.type == 1 || Board.blocks[y][x]?.type == 5) {
-                                    
-                                } else if(Board.blocks[y][x]?.type == 0 || Board.blocks[y][x]?.type == 2 || Board.blocks[y][x]?.type == 3 || Board.blocks[y][x]?.type == 4) {
-                                    Board.blocks[y][x] = Block.init(blockType: 3, color: Board.blocks[y][x]!.colorIndex, secondaryColor: drawColor, dir: Board.direction, x: Double(x), y: Double(y))
-                                    addedBlock = true
-                                }
-                            }
-                        }
-                        
-                        
-                        if(addedBlock) {
-                            let p = EntityManager.getPlayer()!
-                            EntityManager.entities = []
-                            EntityManager.addEntity(entity: p)
+                if(layerNum == 0) {
+                    if(GameState.state != "rotating" && singleTouchTimer > 4 && !pressedButton && !inMenu) {
+                        for t in InputController.prevTouches {
+                            var x = Int(camera.x + (t.x / CGFloat(Board.blockSize)) + 0.5 + 500) - 500
+                            var y = Int(camera.y - (t.y / CGFloat(Board.blockSize)) + 0.5 + 500) - 500
                             
-                            for row in 0 ... Board.blocks.count-1 {
-                                for col in 0 ... Board.blocks[0].count-1 {
-                                    Board.blocks[row][col]?.removeSpriteFromParent()
-                                    EntityManager.addEntity(entity: Board.blocks[row][col]!)
-                                }
+                            var addedBlock = false
+                            while(x < 0) {
+                                addLeftRow()
+                                x += 1
+                                camera.x += 1
+                                addedBlock = true
                             }
-                            if(Board.otherEntities.count != 0) {
-                                for e in Board.otherEntities {
-                                    EntityManager.addEntity(entity: e)
-                                }
+                            while(x > Board.blocks[0].count-1) {
+                                addRightRow()
+                                addedBlock = true
                             }
-                            EntityManager.sortEntities()
-                            EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
+                            while(y < 0) {
+                                addTopRow()
+                                y += 1
+                                camera.y += 1
+                                addedBlock = true
+                            }
+                            while(y > Board.blocks.count-1) {
+                                addBottomRow()
+                                addedBlock = true
+                            }
+                            
+                            if(blockIconType == 0) {
+                                if(drawColor == -3) {
+                                    Board.blocks[y][x] = Block.init(blockType: 5, color: -1, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
+                                    addedBlock = true
+                                } else if(drawColor == -2) {
+                                    if(Board.blocks[y][x]?.type != 0) {
+                                        Board.blocks[y][x] = Block.init(blockType: 0, color: -1, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
+                                        addedBlock = true
+                                    }
+                                } else if(drawColor == -1) {
+                                    if(Board.blocks[y][x]?.type != 1) {
+                                        Board.blocks[y][x] = Block.init(blockType: 1, color: -1, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
+                                        addedBlock = true
+                                    }
+                                } else {
+                                    if(!(Board.blocks[y][x]?.type == 2 && Board.blocks[y][x]?.colorIndex == drawColor)) {
+                                        Board.blocks[y][x] = Block.init(blockType: 2, color: drawColor, secondaryColor: -1, dir: -1, x: Double(x), y: Double(y))
+                                        addedBlock = true
+                                    }
+                                }
+                            } else if(blockIconType == 1) {
+                                if(drawColor == -3 || drawColor == -2 || drawColor == -1) {
+                                    if(Board.blocks[y][x]?.type == 1 || Board.blocks[y][x]?.type == 5) {
+                                        
+                                    } else if(Board.blocks[y][x]?.type == 0 || Board.blocks[y][x]?.type == 2 || Board.blocks[y][x]?.type == 3 || Board.blocks[y][x]?.type == 4) {
+                                        Board.blocks[y][x] = Block.init(blockType: 4, color: Board.blocks[y][x]!.colorIndex, secondaryColor: -1, dir: Board.direction, x: Double(x), y: Double(y))
+                                        addedBlock = true
+                                    }
+                                } else {
+                                    if(Board.blocks[y][x]?.type == 1 || Board.blocks[y][x]?.type == 5) {
+                                        
+                                    } else if(Board.blocks[y][x]?.type == 0 || Board.blocks[y][x]?.type == 2 || Board.blocks[y][x]?.type == 3 || Board.blocks[y][x]?.type == 4) {
+                                        Board.blocks[y][x] = Block.init(blockType: 3, color: Board.blocks[y][x]!.colorIndex, secondaryColor: drawColor, dir: Board.direction, x: Double(x), y: Double(y))
+                                        addedBlock = true
+                                    }
+                                }
+                            } else if(blockIconType == 2) {
+                                /* to be handeled in entityLayer menu
+                                 
+                                 var overlap = false
+                                 for e in Board.otherEntities {
+                                 if(e.x == Double(x) && e.y == Double(y)) {
+                                 overlap = true
+                                 }
+                                 }
+                                 if(!overlap) {
+                                 if(drawColor == -3 || drawColor == -2 || drawColor == -1) {
+                                 Board.otherEntities.append(MovingBlock.init(color: -1, dir: Board.direction, xPos: Double(x), yPos: Double(y)))
+                                 EntityManager.addEntity(entity: Board.otherEntities[Board.otherEntities.count-1])
+                                 EntityManager.sortEntities()
+                                 EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
+                                 } else {
+                                 Board.otherEntities.append(MovingBlock.init(color: drawColor, dir: Board.direction, xPos: Double(x), yPos: Double(y)))
+                                 EntityManager.addEntity(entity: Board.otherEntities[Board.otherEntities.count-1])
+                                 EntityManager.sortEntities()
+                                 EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
+                                 }
+                                 }*/
+                            }
+                            
+                            
+                            if(addedBlock) {
+                                let p = EntityManager.getPlayer()!
+                                EntityManager.entities = []
+                                EntityManager.addEntity(entity: p)
+                                
+                                for row in 0 ... Board.blocks.count-1 {
+                                    for col in 0 ... Board.blocks[0].count-1 {
+                                        Board.blocks[row][col]?.removeSpriteFromParent()
+                                        EntityManager.addEntity(entity: Board.blocks[row][col]!)
+                                    }
+                                }
+                                if(Board.otherEntities.count != 0) {
+                                    for e in Board.otherEntities {
+                                        EntityManager.addEntity(entity: e)
+                                    }
+                                }
+                                EntityManager.sortEntities()
+                                EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
+                            }
                         }
                     }
                 }
@@ -282,6 +333,9 @@ class EditorManager {
             for b in colors {
                 b.update(active: false, delta: delta)
             }
+            
+            singleTouchTimer = 0
+            pressedButton = true
         }
         
         GameState.drawNode.position = CGPoint(x: -((camera.x + 0.5) * CGFloat(Board.blockSize)), y: ((camera.y - 0.5) * CGFloat(Board.blockSize)))
@@ -289,6 +343,17 @@ class EditorManager {
     
     class func initElements() {
         drawNode.removeAllChildren()
+        
+        blockLayer = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: 1, height: 1))
+        blockLayer.fillColor = UIColor.clear
+        blockLayer.strokeColor = UIColor.clear
+        drawNode.addChild(blockLayer)
+        
+        entityLayer = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: 1, height: 1))
+        entityLayer.fillColor = UIColor.clear
+        entityLayer.strokeColor = UIColor.clear
+        drawNode.addChild(entityLayer)
+        
         
         let width = UIScreen.main.bounds.width
         let height = UIScreen.main.bounds.height
@@ -301,17 +366,23 @@ class EditorManager {
         
         for b in colors {
             for s in b.sprite {
-                drawNode.addChild(s)
+                blockLayer.addChild(s)
             }
         }
         
-        currentBlockButton = EditorButton.init(x: -Int(width/2) + border, y: -Int(height/2) + border, width: Board.blockSize, height: Board.blockSize, leniency: border/2, type: 0, colorIndex: -99, btext: "")
+        currentBlockButton = EditorButton.init(x: -Int(width/2) + border, y: -Int(height/2) + border, width: Board.defaultBlockSize, height: Board.defaultBlockSize, leniency: border/2, type: 0, colorIndex: -99, btext: "")
         for s in currentBlockButton.sprite {
+            drawNode.addChild(s)
+        }
+        
+        switchLayerButton = EditorButton.init(x: -Int(width/2)+border, y: -Int(height/2) + (border*2) + Board.defaultBlockSize, width: Board.defaultBlockSize, height: Board.defaultBlockSize, leniency: border/2, type: 4, colorIndex: -1, btext: "B")
+        for s in switchLayerButton.sprite {
             drawNode.addChild(s)
         }
         
         drawNode.addChild(currentBlockIcon)
         loadCurrentBlockIcon()
+        
         
         rotateLeftButton = EditorButton.init(x: Int(width/2)-((buttonSize+border)*2), y: -Int(height/2)+border, width: buttonSize, height: buttonSize, leniency: border/2, type: 2, colorIndex: 0, btext: "")
         rotateRightButton = EditorButton.init(x: Int(width/2)-(buttonSize+border), y: -Int(height/2)+border, width: buttonSize, height: buttonSize, leniency: border/2, type: 2, colorIndex: 1, btext: "")
@@ -338,7 +409,7 @@ class EditorManager {
         
         
         let bwidth = (0.60*Double(width))
-        let bheight = (0.17*Double(height))
+        let bheight = (0.14*Double(height))
         let numMenuItems = 5.0
         
         let temp = (Double(border)*(numMenuItems / 2.0))
@@ -353,12 +424,15 @@ class EditorManager {
         
         itemIndex += 1
         loadFromClipboard = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Load from Clipboard")
+        loadFromClipboard.sprite[1].position = CGPoint(x: -9999, y: -9999)
         
         itemIndex += 1
         reset = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Reset")
+        reset.sprite[1].position = CGPoint(x: -9999, y: -9999)
         
         itemIndex += 1
         play = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Play")
+        play.sprite[1].position = CGPoint(x: -9999, y: -9999)
         
         for s in save.sprite {
             menu.addChild(s)
@@ -436,6 +510,7 @@ class EditorManager {
                 Board.blocks[i][j]?.x += 1.0
             }
         }
+        Board.spawnPoint.x += 1
         EntityManager.getPlayer()!.x += 1
         for e in Board.otherEntities {
             e.x += 1
@@ -460,6 +535,7 @@ class EditorManager {
                 Board.blocks[row][col]?.x = Double(col)
             }
         }
+        Board.spawnPoint.y += 1
         EntityManager.getPlayer()!.y += 1
         for e in Board.otherEntities {
             e.y += 1
@@ -494,7 +570,7 @@ class EditorManager {
                     code += "\(b.direction)\(b.colorIndex+2)\(b.colorIndex2+2)"; break
                 case 4:
                     code += "-\(b.direction+1)\(b.colorIndex+2)"
-                    exits.append([row, col, 0]); break
+                    exits.append([col, row, 0]); break
                 case 5:
                     code += "-9"; break
                 case 6:
@@ -534,6 +610,24 @@ class EditorManager {
             }
         }
         code += "e"
+        
+        for e in Board.otherEntities {
+            code += "n"
+            
+            if(e.name == "moving block") {
+                code += "0"
+                code += "\((e as! MovingBlock).colorIndex)"
+                code += "."
+                code += "\((e as! MovingBlock).direction)"
+                code += "."
+                code += "\(Int(e.x))"
+                code += "."
+                code += "\(Int(e.y))"
+                code += "e"
+            } else {
+                
+            }
+        }
         
         code += "m"
         code += "defaultName"

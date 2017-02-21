@@ -13,6 +13,7 @@ class MovingBlock: Entity {
     var direction = 0
     var colorIndex = -1
     var color = UIColor.purple
+    var falling = true
     
     init(color: Int, dir: Int, xPos: Double, yPos: Double) {
         super.init()
@@ -40,13 +41,17 @@ class MovingBlock: Entity {
         loadSprite()
     }
     
+    override func rotate() {
+        falling = true
+    }
+    
     override func duplicate() -> Entity {
         return MovingBlock.init(color: colorIndex, dir: direction, xPos: x, yPos: y)
     }
     
     override func update(delta: TimeInterval) {
         if(GameState.playerState == "free" || GameState.playerState == "rotating" || GameState.playerState == "changing color") {
-            if((Board.direction + direction) % 2 == 0) {
+            if((Board.direction + direction) % 2 == 0 && falling) {
                 yVel += GameState.gravity * delta
             }
         } else if(GameState.state == "rotating") {
@@ -81,32 +86,68 @@ class MovingBlock: Entity {
     }
     
     override func checkForCollision(with: [Entity]) {
+        let colAcc = 0.001
+        
         for entity in with {
             if(Entity.collides(this: self, with: entity)) {
                 if(entity.name == "block") {
-                    let colAcc = 0.001
-                    
                     if(yVel > 0) {
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + colAcc, y: nextY)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + 1 - colAcc, y: nextY)) )  {
                             
                             nextY = entity.nextY - 1
                             yVel = 0
+                            
+                            falling = false
                         }
                     } else if(xVel < 0) {
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX, y: y + colAcc)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX, y: y + 1 - colAcc)) )  {
                             
                             nextX = entity.nextX + 1
                             xVel = 0
+                            
+                            falling = false
                         }
                     } else if(xVel > 0) {
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX + 1, y: y + colAcc)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX + 1, y: y + 1 - colAcc)) )  {
                             
                             nextX = entity.nextX - 1
                             xVel = 0
+                            
+                            falling = false
                         }
                     }
                 } else if(entity.name == "moving block") {
-                    
+                    if(yVel > 0) {
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + colAcc, y: nextY)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + 1 - colAcc, y: nextY)) )  {
+                            
+                            nextY = entity.nextY - 1
+                            yVel = 0
+                            
+                            if(!(entity as! MovingBlock).falling) {
+                                falling = false
+                            }
+                        }
+                    } else if(xVel > 0) {
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX, y: y + colAcc)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX, y: y + 1 - colAcc)) )  {
+                            
+                            nextX = entity.nextX + 1
+                            xVel = 0
+                            
+                            if(!(entity as! MovingBlock).falling) {
+                                falling = false
+                            }
+                        }
+                    } else if(xVel < 0) {
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX + 1, y: y + colAcc)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY, width: 1.0, height: 1.0), point: CGPoint(x: nextX + 1, y: y + 1 - colAcc)) )  {
+                            
+                            nextX = entity.nextX - 1
+                            xVel = 0
+                            
+                            if(!(entity as! MovingBlock).falling) {
+                                falling = false
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -30,8 +30,8 @@ class EntityManager {
     
     static func checkForCollision() {
         for e in entitiesByCollisionPriority {
-            if(e.isDynamic) {
-                e.checkForCollision(with: getEntitiesNear(entity: e, radius: 2.0))
+            if(e.isDynamic) {// && e.name != "moving block") {
+                e.checkForCollision(with: getEntitiesNear(entity: e, radius: collisionRadius))
             }
         }
         
@@ -135,8 +135,19 @@ class EntityManager {
         for e in entities {
             var index = 0
             if(temp.count > 0) {
-                while(index < temp.count && temp[index].drawPriority < e.drawPriority) {
+                var hold = false
+                while(index < temp.count && temp[index].drawPriority < e.drawPriority && !hold) {
                     index += 1
+                    
+                    if(e.name == "moving block" && temp[index].name == "moving block") {
+                        if(e.y < temp[index].y) {
+                            hold = true
+                        } else {
+                            hold = false
+                        }
+                    } else {
+                        hold = false
+                    }
                 }
             }
             

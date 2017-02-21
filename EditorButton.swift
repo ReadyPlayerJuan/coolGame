@@ -98,7 +98,7 @@ class EditorButton {
             color = UIColor.init(red: gray, green: gray, blue: gray, alpha: 1.0)
             let color2 = UIColor.init(red: gray2, green: gray2, blue: gray2, alpha: 1.0)
             sprite = [SKShapeNode.init(rect: rect), SKShapeNode.init(rect: rect)]
-            sprite[1].position = CGPoint(x: -9999, y: -9999)
+            //sprite[1].position = CGPoint(x: -9999, y: -9999)
             sprite[0].fillColor = color
             sprite[0].strokeColor = color2
             sprite[0].lineWidth = 3
@@ -118,7 +118,7 @@ class EditorButton {
             let gray = CGFloat(0.6)
             color = UIColor.init(red: gray, green: gray, blue: gray, alpha: 1.0)
             sprite = [SKShapeNode.init(rect: rect), SKShapeNode.init(rect: rect)]
-            sprite[1].position = CGPoint(x: -9999, y: -9999)
+            //sprite[1].position = CGPoint(x: -9999, y: -9999)
             sprite[0].fillColor = color
             sprite[0].strokeColor = UIColor.white
             sprite[0].lineWidth = 3
@@ -140,6 +140,14 @@ class EditorButton {
         sprite[1].strokeColor = UIColor.black
         sprite[1].alpha = 0.0
         sprite[1].zPosition = 110
+    }
+    
+    func setText(newText: String) {
+        if(type == 3 || type == 4) {
+            (sprite[0].children[0] as! SKLabelNode).text = newText
+        } else {
+            print("cannot change button text")
+        }
     }
     
     func update(active: Bool, delta: TimeInterval) {

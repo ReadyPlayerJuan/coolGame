@@ -185,7 +185,6 @@ class Player: Entity {
         } else if(GameState.playerState == "respawning") {
             sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
             sprite[0].fillColor = UIColor.clear
-            //sprite[0].alpha = CGFloat(t)
         }
     }
         

@@ -17,7 +17,6 @@ class Memory {
         let defaults = UserDefaults.standard
         
         defaults.setValue(code, forKey: stageEdit.code)
-        print(getStageEdit())
         
         defaults.synchronize()
     }

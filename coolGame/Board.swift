@@ -16,6 +16,7 @@ class Board {
     static var blocks: [[Block?]]!
     static var otherEntities: [Entity] = []
     
+    static let defaultBlockSize = 50
     static var blockSize = 50
     static var spawnPoint: CGPoint!
     static var colorTheme = 0
@@ -47,6 +48,7 @@ class Board {
             }
         }
         
+        blockSize = defaultBlockSize
         direction = 0
         let temp: [[Int]]! = currentStage?.blocks
         spawnPoint = currentStage?.spawnPoint
@@ -111,6 +113,8 @@ class Board {
                 entity.xVel = entity.yVel * -1
                 entity.yVel = temp
                 
+                entity.rotate()
+                
                 entity.loadSprite()
                 entity.updateSprite()
             }
@@ -147,6 +151,8 @@ class Board {
                 entity.xVel = entity.yVel
                 entity.yVel = temp * -1
                 
+                entity.rotate()
+                
                 entity.loadSprite()
                 entity.updateSprite()
             }
@@ -175,6 +181,26 @@ class Board {
             tempPoint.y = CGFloat(Double(blocks[0].count-1)-tempCoords[0])
             return tempPoint
         }
+    }
+    
+    class func sortOtherEntities() -> [Entity] {
+        var temp = [Entity]()
+        
+        for e in otherEntities {
+            var index = 0
+            if(temp.count > 0) {
+                while(index < temp.count && temp[index].y >= e.y) {
+                    index += 1
+                }
+            }
+            
+            temp.insert(e, at: index)
+        }
+        for e in temp {
+            print(e.y)
+        }
+        
+        return temp
     }
     
     private class func newEmptyArray(width: Int, height: Int) -> [[Block?]] {
