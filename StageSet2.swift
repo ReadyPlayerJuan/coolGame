@@ -23,10 +23,10 @@ class StageSet2 {
     class func getStage(index: Int) -> Stage {
         var stage: [[Int]]? = nil
         var spawnPoint = CGPoint(x: -1, y: -1)
-        var otherEntities: [Entity] = []
+        var otherEntities: [Entity]!
         otherEntities = []
         var exitTargets: [[Int]]!
-        var name = "nope, no name today"
+        var name = "no name found"
         
         /*
          stage writing guide:

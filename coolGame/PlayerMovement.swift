@@ -34,6 +34,9 @@ extension Player {
     }
     
     func rotate(delta: Double) {
+        yVel = 0
+        nextY = Double(Int(nextY + 0.5))
+        
         let rotateSpeed = 2.5
         
         if(movingLeft) {
@@ -146,7 +149,7 @@ extension Player {
                             if(entity.isDangerous) {
                                 GameState.gameAction(type: "kill player")
                             }
-                            //print(" hit ground, with block at \(Int(entity.x)), \(Int(entity.y))  xmod = \(xMod)")
+                            //print(" hit ground, with block at \(Int(entity.x)), \(Int(entity.y))")
                         }
                     } else if(yVel < 0) {
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX +         0.5), y: (nextY - (sqrt(3.0) / 2.0)) + colAcc))) {
@@ -184,10 +187,11 @@ extension Player {
                     
                     //check for collision in multiple points throughout the edges of the player
                     let step = 50.0
+                    
                     for posInEdge in stride(from: 0.0, through: 1.0, by: (1.0 / step)) {
                         xMod = posInEdge/2
                         yMod = posInEdge * (sqrt(3.0) / -2.0)
-                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + xMod + colAcc), y: (nextY + yMod - colAcc))) && entity.nextX + 0.5 < x) {
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + xMod + colAcc), y: (nextY + yMod - colAcc))) && entity.nextX + 0.5 - colAcc < x) {
                             
                             if(entity.isDangerous) {
                                 GameState.gameAction(type: "kill player")

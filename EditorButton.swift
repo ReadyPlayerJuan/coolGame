@@ -43,10 +43,14 @@ class EditorButton {
             break
         case 1:
             sprite = [SKShapeNode.init(rect: rect), SKShapeNode.init(rect: rect)]
-            sprite[0].fillColor = color
-            sprite[0].strokeColor = UIColor.white
-            sprite[0].lineWidth = 3
-            sprite[0].zPosition = 101
+            /*if(colorIndex == -3) {
+                sprite[0] = SKShapeNode
+            } else {*/
+                sprite[0].fillColor = color
+                sprite[0].strokeColor = UIColor.white
+                sprite[0].lineWidth = 3
+                sprite[0].zPosition = 101
+            //}
             break
         case 2:
             let gray = CGFloat(0.6)

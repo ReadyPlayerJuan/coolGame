@@ -89,8 +89,8 @@ class MovingBlock: Entity {
         let colAcc = 0.001
         
         for entity in with {
-            if(Entity.collides(this: self, with: entity)) {
-                if(entity.name == "block") {
+            if(entity.name == "block") {
+                if(Entity.collides(this: self, with: entity)) {
                     if(yVel > 0) {
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + colAcc, y: nextY)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + 1 - colAcc, y: nextY)) )  {
                             
@@ -116,7 +116,9 @@ class MovingBlock: Entity {
                             falling = false
                         }
                     }
-                } else if(entity.name == "moving block") {
+                }
+            } else if(entity.name == "moving block") {
+                if(Entity.collides(this: self, with: entity) || Entity.collides(this: entity, with: self)) {
                     if(yVel > 0) {
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + colAcc, y: nextY)) || rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: x + 1 - colAcc, y: nextY)) )  {
                             
@@ -164,22 +166,22 @@ class MovingBlock: Entity {
             let arrow1 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: Double(Board.blockSize)*(1/3.0), y: Double(Board.blockSize)*((1/2.0) + (1/18.0))), rotation: 0.0, size: Double(Board.blockSize)*(1/3.0)))
             arrow1.strokeColor = UIColor.black
             arrow1.fillColor = UIColor.clear
-            arrow1.lineWidth = 2.0
+            arrow1.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
             let arrow2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: Double(Board.blockSize)*(2/3.0), y: Double(Board.blockSize)*((1/2.0) - (1/18.0))), rotation: 180.0, size: Double(Board.blockSize)*(1/3.0)))
             arrow2.strokeColor = UIColor.black
             arrow2.fillColor = UIColor.clear
-            arrow2.lineWidth = 2.0
+            arrow2.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
             sprite[0].addChild(arrow1)
             sprite[0].addChild(arrow2)
         } else {
             let arrow1 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: Double(Board.blockSize)*((1/2.0) - (1/18.0)), y: Double(Board.blockSize)*(1/3.0)), rotation: 90.0, size: Double(Board.blockSize)*(1/3.0)))
             arrow1.strokeColor = UIColor.black
             arrow1.fillColor = UIColor.clear
-            arrow1.lineWidth = 2.0
+            arrow1.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
             let arrow2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: Double(Board.blockSize)*((1/2.0) + (1/18.0)), y: Double(Board.blockSize)*(2/3.0)), rotation: -90.0, size: Double(Board.blockSize)*(1/3.0)))
             arrow2.strokeColor = UIColor.black
             arrow2.fillColor = UIColor.clear
-            arrow2.lineWidth = 2.0
+            arrow2.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
             sprite[0].addChild(arrow1)
             sprite[0].addChild(arrow2)
         }

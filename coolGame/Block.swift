@@ -125,7 +125,7 @@ class Block: Entity {
             
             color = UIColor(red: CGFloat(colorArray[0]) / 255.0, green: CGFloat(colorArray[1]) / 255.0, blue: CGFloat(colorArray[2]) / 255.0, alpha: 1.0)
         } else if(type == 5) {
-            color = Board.backgroundColor
+            color = UIColor.clear
         }
         //print(color)
         //col = color

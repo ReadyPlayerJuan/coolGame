@@ -48,8 +48,7 @@ class Entity {
     }
     
     static func collides(this: Entity, with: Entity) -> Bool {
-        return (arrayContains(array: this.collidesWithType, number: with.collisionType))
-            //|| arrayContains(array: with.collidesWithType, number: this.collisionType))
+        return arrayContains(array: this.collidesWithType, number: with.collisionType)
     }
     
     private static func arrayContains(array: [Int], number: Int) -> Bool {
@@ -81,6 +80,10 @@ class Entity {
                 s.removeFromParent()
             }
         }
+    }
+    
+    func equals(_ otherEntity: Entity) -> Bool {
+        return name == otherEntity.name && x == otherEntity.x && y == otherEntity.y && ID == otherEntity.ID
     }
     
     func rand() -> Double {

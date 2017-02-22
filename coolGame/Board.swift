@@ -29,7 +29,7 @@ class Board {
     //static let whiteBlockCategory: UInt32 = UInt32(exactly: 1)!
     //static let playerCategory: UInt32 = UInt32(exactly: 99)!
     
-    static let gray = CGFloat(0.15)
+    static let gray = CGFloat(0.25)
     static let backgroundColor = UIColor.init(red: gray, green: gray, blue: gray, alpha: 1.0)
     
     class func nextStage() {

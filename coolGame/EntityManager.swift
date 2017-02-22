@@ -14,7 +14,7 @@ class EntityManager {
     static var entitiesByDrawPriority: [Entity] = []
     static var entitiesByCollisionPriority: [Entity] = []
     static var nextID = 0
-    static let collisionRadius = 1.3
+    static let collisionRadius = 2.0
     
     static func addEntity(entity: Entity) {
         entities.append(entity)
