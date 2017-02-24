@@ -19,6 +19,7 @@ class MovingBlock: Entity {
         super.init()
         
         direction = dir
+        direction %= 2
         x = xPos
         y = yPos
         

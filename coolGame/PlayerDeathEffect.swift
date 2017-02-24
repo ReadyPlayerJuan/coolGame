@@ -90,7 +90,7 @@ extension Player {
         for p in deathParticles {
             var index = 0
             if(temp.count > 0) {
-                while(index < temp.count && temp[index].name!.toDouble() > p.name!.toDouble()) {
+                while(index < temp.count && temp[index].name!.toDouble()! > p.name!.toDouble()!) {
                     index += 1
                 }
             }

@@ -24,7 +24,6 @@ class EditorScene: SKScene {
     
     var mainView: SKView!
     var prevTime = 0.0
-    var firstFrame = true
     
     override func didMove(to view: SKView) {
         mainView = view
@@ -83,6 +82,7 @@ class EditorScene: SKScene {
             Memory.saveStageEdit(code: Stage.defaultStage)
         }
         
+        GameState.ignoreDelta = true
         GameState.gameAction(type: "begin editor")
     }
     
@@ -103,11 +103,6 @@ class EditorScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        if(firstFrame) {
-            firstFrame = false
-            prevTime = currentTime
-        }
-        
         GameState.update(delta: currentTime - prevTime)
         prevTime = currentTime
     }

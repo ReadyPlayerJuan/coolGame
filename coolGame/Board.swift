@@ -16,8 +16,8 @@ class Board {
     static var blocks: [[Block?]]!
     static var otherEntities: [Entity] = []
     
-    static let defaultBlockSize = 50
-    static var blockSize = 50
+    static let defaultBlockSize: Double = 50.0
+    static var blockSize: Double = 50.0
     static var spawnPoint: CGPoint!
     static var colorTheme = 0
     static var direction = 0

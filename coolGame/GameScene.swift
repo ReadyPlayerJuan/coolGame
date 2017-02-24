@@ -23,7 +23,6 @@ class GameScene: SKScene {
     
     var mainView: SKView!
     var prevTime = 0.0
-    var firstFrame = true
     
     override func didMove(to view: SKView) {
         mainView = view
@@ -66,6 +65,7 @@ class GameScene: SKScene {
         GameState.drawNode = drawNode
         GameState.rotateNode = rotateNode
         
+        GameState.ignoreDelta = true
         GameState.beginGame()
     }
     
@@ -86,11 +86,6 @@ class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        if(firstFrame) {
-            firstFrame = false
-            prevTime = currentTime
-        }
-        
         GameState.update(delta: currentTime - prevTime)
         prevTime = currentTime
     }

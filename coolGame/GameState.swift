@@ -32,6 +32,8 @@ class GameState {
     
     static var currentDelta = 0.0
     
+    static var ignoreDelta = true
+    
     static var firstFrame = false
     static var lastFrame = false
     
@@ -55,8 +57,12 @@ class GameState {
     static var numRotations = 0
     static var prevDirection = 0
     
-    static let gravity = 0.6
-    static let moveSpeed = 3.3
+    static let maxMoveSpeed = 4.5
+    static let slideLength = 0.15
+    static let accelerationBonus = 3.0
+    static let jumpHeight = 2.2
+    static let jumpLength = 0.35
+    static let gravity = jumpHeight / (pow(jumpLength, 2))
     
     static var globalRand = 0.0
     
@@ -86,12 +92,17 @@ class GameState {
     }
     
     class func update(delta: TimeInterval) {
-        time += delta
         currentDelta = delta
+        if(ignoreDelta) {
+            ignoreDelta = false
+            currentDelta = 0
+        }
+        
+        time += currentDelta
         globalRand = rand()
         
-        if(inEditor && currentlyEditing) {
-            EditorManager.update(delta: delta)
+        if(inEditor) {
+            EditorManager.update(delta: currentDelta)
         }
         
         if(state == "in game") {
@@ -103,7 +114,7 @@ class GameState {
                     actionFirstFrame()
                 }
                 
-                colorChangeTimer -= delta
+                colorChangeTimer -= currentDelta
                 
                 if(colorChangeTimer <= 0) {
                     colorChangeTimer = 0
@@ -112,7 +123,7 @@ class GameState {
             }
             
             if(!currentlyEditing) {
-                EntityManager.updateEntities(delta: delta)
+                EntityManager.updateEntities(delta: currentDelta)
                 drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
             } else {
                 drawNode.position = CGPoint(x: -((EditorManager.camera.x + 0.5) * CGFloat(Board.blockSize)), y: ((EditorManager.camera.y - 0.5) * CGFloat(Board.blockSize)))
@@ -125,7 +136,7 @@ class GameState {
             firstFrame = false
             lastFrame = false
             
-            stageTransitionTimer -= delta
+            stageTransitionTimer -= currentDelta
             if(!currentlyEditing) {
                 drawNode.position = CGPoint(x: (-((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize))) + Double(getStageTransitionVector().dx), y: (((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize))) + Double(getStageTransitionVector().dy))
             }
@@ -136,6 +147,7 @@ class GameState {
                 swappedStages = true
                 
                 if(inEditor) {
+                    EditorManager.exitStageButton.sprite[0].alpha = 0.0
                     GameState.gameAction(type: "begin editor")
                 }
             }
@@ -161,7 +173,7 @@ class GameState {
                 actionFirstFrame()
             }
             
-            rotateTimer -= delta
+            rotateTimer -= currentDelta
             
             if(rotateTimer <= rotateTimerMax / 4 && playerState == "paused" && !currentlyEditing) {
                 playerState = "free"
@@ -172,7 +184,7 @@ class GameState {
                 actionLastFrame()
             }
             
-            EntityManager.updateEntities(delta: delta)
+            EntityManager.updateEntities(delta: currentDelta)
             if(!currentlyEditing) {
                 drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
             } else {
@@ -187,14 +199,14 @@ class GameState {
                 actionFirstFrame()
             }
             
-            deathTimer -= delta
+            deathTimer -= currentDelta
             
             if(deathTimer <= 0) {
                 deathTimer = 0
                 actionLastFrame()
             }
             
-            EntityManager.updateEntities(delta: delta)
+            EntityManager.updateEntities(delta: currentDelta)
             drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + Double(getDeathVector().dx) + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y + Double(getDeathVector().dy) - 0.5) * Double(Board.blockSize)))
             rotateNode.zRotation = CGFloat(getDeathRotation())
         }

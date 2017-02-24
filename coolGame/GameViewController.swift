@@ -30,6 +30,8 @@ class GameViewController: UIViewController {
             view.ignoresSiblingOrder = true
             view.isMultipleTouchEnabled = true
             view.showsFPS = true
+            view.showsNodeCount = true
+            view.shouldCullNonVisibleNodes = true
         }
     }
 

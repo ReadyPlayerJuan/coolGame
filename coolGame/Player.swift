@@ -15,9 +15,10 @@ class Player: Entity {
     var rotation = 0.0
     var rotationVel = 0.0
     
-    var gravitySpeed = 45.0
     var speed = 2.0
     var slide = 0.6
+    var verticalMovementTimer = 0.0
+    var horizontalMovementTimer = 0.0
     
     let colAcc = 0.0001
     

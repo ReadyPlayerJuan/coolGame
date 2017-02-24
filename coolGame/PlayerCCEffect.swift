@@ -80,7 +80,7 @@ extension Player {
             
             if(numberFromLetter(current) == -1) {
                 //current is not a letter
-                for _ in 0...current.toInt()-1 {
+                for _ in 0...current.toInt()!-1 {
                     index += 1
                     cell = "\(cell)\(code.charAt(index))"
                 }

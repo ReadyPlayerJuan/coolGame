@@ -29,18 +29,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
-        GameState.gamescene.firstFrame = true
+        GameState.ignoreDelta = true
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-        GameState.gamescene.firstFrame = true
+        GameState.ignoreDelta = true
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         //EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
-        GameState.gamescene.firstFrame = true
+        GameState.ignoreDelta = true
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -64,12 +64,12 @@ extension String {
         return self.substring(with: range)
     }
     
-    func toInt() -> Int {
-        return NumberFormatter().number(from: self)!.intValue
+    func toInt() -> Int? {
+        return NumberFormatter().number(from: self)?.intValue
     }
     
-    func toDouble() -> Double {
-        return NumberFormatter().number(from: self)!.doubleValue
+    func toDouble() -> Double? {
+        return NumberFormatter().number(from: self)?.doubleValue
     }
 }
 

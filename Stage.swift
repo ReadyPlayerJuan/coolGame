@@ -48,6 +48,9 @@ class Stage {
         return children.count
     }
     
+    enum LoadStageError: Error {
+        case invalidCode
+    }
     
     class func loadStage(code: String) -> Stage {
         var blocks = [[Int]]()
@@ -61,13 +64,21 @@ class Stage {
         var entityType = 0
         var parameters = [String]()
         
-        while(index < code.length()) {
+        var invalid = false
+        var completed = false
+        while(index < code.length() && !invalid && !completed) {
             if(currentAction == "") {
                 currentAction = code.charAt(index)
                 index += 1
                 
                 if(currentAction == "n") {
-                    entityType = code.charAt(index).toInt()
+                    let a = code.charAt(index).toInt()
+                    if(a != nil) {
+                        entityType = a!
+                    } else {
+                        invalid = true
+                        currentAction = ""
+                    }
                     index += 1
                 }
             }
@@ -86,7 +97,12 @@ class Stage {
                     blocks.append([Int]())
                     
                     for s in parameters {
-                        blocks[blocks.count-1].append(s.toInt())
+                        let a = s.toInt()
+                        if(a != nil) {
+                            blocks[blocks.count-1].append(a!)
+                        } else {
+                            invalid = true
+                        }
                     }
                     
                     parameters = [String]()
@@ -114,18 +130,28 @@ class Stage {
                 parameters.append(num)
                 
                 if(code.charAt(index) == "e") {
-                    var e: Entity
+                    var e = Entity()
                     
                     switch(entityType) {
                     case 0:
-                        e = MovingBlock.init(color: (parameters[0]).toInt(), dir: (parameters[1]).toInt(), xPos: (parameters[2]).toDouble(), yPos: (parameters[3]).toDouble())
+                        let checkParams = [(parameters[0]).toInt(), (parameters[1]).toInt(), (parameters[2]).toInt(), (parameters[3]).toInt()]
+                        for p in checkParams {
+                            if(p == nil) {
+                                invalid = true
+                            }
+                        }
+                        if(!invalid) {
+                            e = MovingBlock.init(color: (parameters[0]).toInt()!, dir: (parameters[1]).toInt()!, xPos: (parameters[2]).toDouble()!, yPos: (parameters[3]).toDouble()!)
+                        }
                         break
                     default:
                         e = Entity()
                         break
                     }
                     
-                    entities.append(e)
+                    if(!invalid) {
+                        entities.append(e)
+                    }
                     parameters = [String]()
                     currentAction = ""
                 }
@@ -143,13 +169,18 @@ class Stage {
                         currentAction = ""
                     }
                     
-                    spawn.append(num.toInt())
+                    let a = num.toInt()
+                    if(a != nil) {
+                        spawn.append(a!)
+                    } else {
+                        invalid = true
+                    }
                     index += 1
                 }
             } else if(currentAction == "x") {
                 var num = ""
                 
-                while(code.charAt(index) != "." && code.charAt(index) != "e") {
+                while(code.charAt(index) != "." && code.charAt(index) != "," && code.charAt(index) != "e") {
                     num = "\(num)\(code.charAt(index))"
                     index += 1
                 }
@@ -158,7 +189,14 @@ class Stage {
                 if(code.charAt(index) == "e" || code.charAt(index) == ",") {
                     exits.append([Int]())
                     for s in parameters {
-                        exits[exits.count-1].append(s.toInt())
+                        if(!invalid) {
+                            let a = s.toInt()
+                            if(a != nil) {
+                                exits[exits.count-1].append(a!)
+                            } else {
+                                invalid = true
+                            }
+                        }
                     }
                     parameters = [String]()
                     
@@ -174,7 +212,12 @@ class Stage {
                     name = "\(name)\(code.charAt(index))"
                     index += 1
                 }
+                completed = true
             }
+        }
+        
+        if(invalid) {
+            return Stage.loadStage(code: Stage.defaultStage)
         }
         return Stage.init(withBlocks: blocks, entities: entities, spawn: CGPoint(x: spawn[0], y: spawn[1]), withName: name, exits: exits)
     }

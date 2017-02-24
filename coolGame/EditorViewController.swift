@@ -27,6 +27,8 @@ class EditorViewController: UIViewController {
             view.isMultipleTouchEnabled = true
             view.ignoresSiblingOrder = true
             view.showsFPS = true
+            view.showsNodeCount = true
+            view.shouldCullNonVisibleNodes = true
         }
     }
     

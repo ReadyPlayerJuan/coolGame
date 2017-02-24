@@ -107,7 +107,6 @@ class EditorButton {
             sprite[0].strokeColor = color2
             sprite[0].lineWidth = 3
             sprite[0].zPosition = 101
-            sprite[0].zPosition = 101
             text = SKLabelNode.init(text: btext)
             text?.fontName = "Optima-Bold"
             text?.fontSize = rect.height * 0.8
@@ -135,6 +134,44 @@ class EditorButton {
             text?.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
             text?.zPosition = 3
             sprite[0].addChild(text!)
+            break
+        case 5:
+            let gray = CGFloat(0.35)
+            let gray2 = CGFloat(0.55)
+            color = UIColor.init(red: gray, green: gray, blue: gray, alpha: 1.0)
+            let color2 = UIColor.init(red: gray2, green: gray2, blue: gray2, alpha: 1.0)
+            sprite = [SKShapeNode.init(rect: rect), SKShapeNode.init(rect: rect)]
+            sprite[1].position = CGPoint(x: -9999, y: -9999)
+            sprite[0].fillColor = color
+            sprite[0].strokeColor = color2
+            sprite[0].lineWidth = 3
+            sprite[0].zPosition = 101
+            
+            let path1 = UIBezierPath.init()
+            let size = 0.05
+            path1.move(to: CGPoint(x: 0, y: Double(rect.height)*size))
+            path1.addLine(to: CGPoint(x: Double(rect.width)*size, y: 0))
+            path1.addLine(to: CGPoint(x: Double(rect.width)*(1), y: Double(rect.height)*(1-size)))
+            path1.addLine(to: CGPoint(x: Double(rect.width)*(1-size), y: Double(rect.height)*(1)))
+            
+            let line1 = SKShapeNode.init(path: path1.cgPath)
+            line1.fillColor = UIColor.red
+            line1.strokeColor = UIColor.clear
+            line1.zPosition = 50
+            
+            let path2 = UIBezierPath.init()
+            path2.move(to: CGPoint(x: Double(rect.width), y: Double(rect.height)*size))
+            path2.addLine(to: CGPoint(x: Double(rect.width)*(1-size), y: 0))
+            path2.addLine(to: CGPoint(x: Double(rect.width)*(0), y: Double(rect.height)*(1-size)))
+            path2.addLine(to: CGPoint(x: Double(rect.width)*(size), y: Double(rect.height)*(1)))
+            
+            let line2 = SKShapeNode.init(path: path2.cgPath)
+            line2.fillColor = UIColor.red
+            line2.strokeColor = UIColor.clear
+            
+            line1.position = CGPoint(x: rect.minX, y: rect.minY)
+            sprite[0].addChild(line1)
+            line1.addChild(line2)
             break
         default:
             break
@@ -186,7 +223,40 @@ class EditorButton {
     }
     
     func loadColor() {
-        if(colorIndex == -3) {
+        if(colorIndex == -4) {
+            let hazardCycle = 15.0
+            var c = 0 + 0 + (GameState.time / (2 * hazardCycle))
+            
+            if(GameState.state == "rotating") {
+                let ang = abs(GameState.getRotationValue()) / (3.14159 / 2)
+                c += hazardCycle * (1-ang)
+            } else if(GameState.state == "resetting stage") {
+                let ang = abs(GameState.getDeathRotation()) / (3.14159 / 2)
+                c += hazardCycle * (1-ang) * ((Double(GameState.deathTimerMax) / Double(GameState.rotateTimerMax)) / 2.0)
+            }
+            
+            let colorProgression = abs((remainder(c, hazardCycle) + (hazardCycle/2.0)) / hazardCycle) + (GameState.time / (2 * hazardCycle))
+            
+            var r = remainder(colorProgression + 0.0, 1.0) + 0.5
+            var g = remainder(colorProgression + 0.333, 1.0) + 0.5
+            var b = remainder(colorProgression + 0.666, 1.0) + 0.5
+            r = abs((r * 2) - 1)
+            g = abs((g * 2) - 1)
+            b = abs((b * 2) - 1)
+            
+            var rand = 0.0
+            rand = GameState.globalRand
+            
+            let flicker = (1 * (pow(rand * 0.9, 4) - 0.5) / 2) + 0.2
+            r = min(1.0, max(0.0, r + flicker))
+            g = min(1.0, max(0.0, g + flicker))
+            b = min(1.0, max(0.0, b + flicker))
+            
+            color = UIColor.init(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
+            if(sprite.count > 0) {
+                sprite[0].fillColor = color
+            }
+        } else if(colorIndex == -3) {
             color = Board.backgroundColor
         } else if(colorIndex == -2) {
             color = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)

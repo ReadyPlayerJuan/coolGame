@@ -11,6 +11,7 @@ import SpriteKit
 
 extension Player {
     func move(delta: Double) {
+        /*
         if(jumping) {
             //check if able to jump
             if(y == Double(Int(y)) && yVel == 0) {
@@ -24,17 +25,62 @@ extension Player {
             xVel += GameState.moveSpeed * delta
         }
         
-        prevXVel = xVel
-        prevYVel = yVel
-        
         yVel += GameState.gravity * delta
         xVel *= 0.56
+        */
+        
+        if((movingLeft && !movingRight) || (movingLeft && movingRight && horizontalMovementTimer < 0)) {
+            horizontalMovementTimer -= delta * GameState.accelerationBonus
+            if(horizontalMovementTimer < -GameState.slideLength) {
+                horizontalMovementTimer = -GameState.slideLength
+            }
+        } else if((movingRight && !movingLeft) || (movingLeft && movingRight && horizontalMovementTimer > 0)) {
+            horizontalMovementTimer += delta * GameState.accelerationBonus
+            if(horizontalMovementTimer > GameState.slideLength) {
+                horizontalMovementTimer = GameState.slideLength
+            }
+        } else {
+            if(horizontalMovementTimer < 0) {
+                horizontalMovementTimer += delta
+                if(horizontalMovementTimer > 0) {
+                    horizontalMovementTimer = 0
+                }
+            } else if(horizontalMovementTimer > 0) {
+                horizontalMovementTimer -= delta
+                if(horizontalMovementTimer < 0) {
+                    horizontalMovementTimer = 0
+                }
+            }
+        }
+        xVel = GameState.maxMoveSpeed * ((horizontalMovementTimer) / GameState.slideLength) * delta
+        
+        if(jumping) {
+            if(y == Double(Int(y)) && verticalMovementTimer == 0) {
+                verticalMovementTimer = -GameState.jumpLength
+            }
+        }
+        let prevHeight = heightAt(time: verticalMovementTimer)
+        verticalMovementTimer += delta
+        if(verticalMovementTimer > 0 && verticalMovementTimer-delta < 0 && prevYVel < 0) {
+            verticalMovementTimer = 0
+        }
+        let nextHeight = heightAt(time: verticalMovementTimer)
+        yVel = nextHeight - prevHeight
+        
+        prevXVel = xVel
+        prevYVel = yVel
+        //xVel *= 0.56
         
         super.update(delta: delta)
     }
     
+    private func heightAt(time: Double) -> Double {
+        return (GameState.gravity * (time * time)) + GameState.jumpHeight
+    }
+    
     func rotate(delta: Double) {
         yVel = 0
+        verticalMovementTimer = 0
         nextY = Double(Int(nextY + 0.5))
         
         let rotateSpeed = 2.5
@@ -145,6 +191,7 @@ extension Player {
                             
                             nextY = entity.nextY - 1
                             yVel = 0
+                            verticalMovementTimer = 0
                             
                             if(entity.isDangerous) {
                                 GameState.gameAction(type: "kill player")
@@ -156,6 +203,7 @@ extension Player {
                             
                             nextY = entity.nextY + (sqrt(3.0) / 2.0) + 2*colAcc
                             yVel = 0
+                            verticalMovementTimer = 0
                             
                             if(entity.isDangerous) {
                                 GameState.gameAction(type: "kill player")
@@ -228,7 +276,7 @@ extension Player {
                 } else {
                     if(entity.name == "block" && ((entity as! Block).type == 3 || (entity as! Block).type == 4) && Board.direction == (entity as! Block).direction) {
                         let b = entity as! Block
-                        if(nextY == Double(Int(nextY)) && y == entity.y && ((x <= entity.x && nextX >= entity.x) || (x >= entity.x && nextX <= entity.x)) && Entity.collides(this: self, with: Board.blocks[Int(y+1)][Int(nextX)]!)) {
+                        if(nextY == Double(Int(nextY)) && y == entity.y && ((x <= entity.x && nextX >= entity.x) || (x >= entity.x && nextX <= entity.x)) && Entity.collides(this: self, with: Board.blocks[Int(y+1)][Int(nextX+0.5)]!)) {
                             if(b.type == 3 && b.colorIndex2 != colorIndex) {
                                 nextX = entity.nextX
                                 xVel = 0
