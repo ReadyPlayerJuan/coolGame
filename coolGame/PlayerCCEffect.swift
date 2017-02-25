@@ -11,6 +11,8 @@ import SpriteKit
 
 extension Player {
     func loadColorChangeEffect() {
+        horizontalMovementTimer = 0
+        verticalMovementTimer = 0
         sprite[0].removeAllChildren()
         
         let pattern = loadColorChangeEffectPattern()
@@ -22,6 +24,7 @@ extension Player {
         let s = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: -diff, y: -0.0), rotation: 0.0, size: size + 2*diff))
         s.strokeColor = UIColor.clear
         s.fillColor = newColor!
+        s.zPosition = 1
         
         for ty in stride(from: 0, to: numTriangles, by: 1) {
             s.zRotation = 0.0

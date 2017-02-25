@@ -11,10 +11,10 @@ import SpriteKit
 
 class EntityManager {
     static var entities: [Entity] = []
-    static var entitiesByDrawPriority: [Entity] = []
     static var entitiesByCollisionPriority: [Entity] = []
     static var nextID = 0
     static let collisionRadius = 2.0
+    static var collisionIterations = 2
     
     static func addEntity(entity: Entity) {
         entities.append(entity)
@@ -22,10 +22,18 @@ class EntityManager {
     }
     
     static func updateEntities(delta: TimeInterval) {
-        for e in entities {
-            e.update(delta: delta)
+        if let p = (EntityManager.getPlayer()) {
+            let vel = hypot(p.xVel, p.yVel)
+            if(vel > 2) {
+                collisionIterations = Int(vel)
+            }
         }
-        checkForCollision()
+        for _ in 0...collisionIterations-1 {
+            for e in entities {
+                e.update(delta: delta / Double(collisionIterations))
+            }
+            checkForCollision()
+        }
     }
     
     static func checkForCollision() {
@@ -60,7 +68,7 @@ class EntityManager {
                 }
             }
             
-            for e in entitiesByDrawPriority {
+            for e in entities {
                 for sprite in e.getSpriteLayer() {
                     node.addChild(sprite)
                 }
@@ -108,7 +116,6 @@ class EntityManager {
     }
     
     static func sortEntities() {
-        entitiesByDrawPriority = sortEntitiesByDrawPriority()
         entitiesByCollisionPriority = sortEntitiesByCollisionPriority()
     }
     
@@ -120,34 +127,6 @@ class EntityManager {
             if(temp.count > 0) {
                 while(index < temp.count && temp[index].collisionPriority > e.collisionPriority) {
                     index += 1
-                }
-            }
-            
-            temp.insert(e, at: index)
-        }
-        
-        return temp
-    }
-    
-    static func sortEntitiesByDrawPriority() -> [Entity] {
-        var temp = [Entity]()
-        
-        for e in entities {
-            var index = 0
-            if(temp.count > 0) {
-                var hold = false
-                while(index < temp.count && temp[index].drawPriority < e.drawPriority && !hold) {
-                    index += 1
-                    
-                    if(e.name == "moving block" && temp[index].name == "moving block") {
-                        if(e.y < temp[index].y) {
-                            hold = true
-                        } else {
-                            hold = false
-                        }
-                    } else {
-                        hold = false
-                    }
                 }
             }
             

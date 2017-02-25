@@ -57,11 +57,11 @@ class GameState {
     static var numRotations = 0
     static var prevDirection = 0
     
-    static let maxMoveSpeed = 4.5
-    static let slideLength = 0.15
+    static let maxMoveSpeed = 4.2
+    static let slideLength = 0.10
     static let accelerationBonus = 3.0
-    static let jumpHeight = 2.2
-    static let jumpLength = 0.35
+    static let jumpHeight = 2.25
+    static let jumpLength = 0.38
     static let gravity = jumpHeight / (pow(jumpLength, 2))
     
     static var globalRand = 0.0
@@ -231,6 +231,7 @@ class GameState {
             state = "stage transition"
             stageTransitionTimer = 0
             swappedStages = true
+            Board.blockSize = Board.defaultBlockSize / 2
         }
         
         if(state == "rotating" && playerState != "changing color") {
@@ -316,6 +317,7 @@ class GameState {
             }
         } else if(state == "resetting stage") {
             (EntityManager.getPlayer()! as! Player).reset()
+            EntityManager.redrawEntities(node: GameState.drawNode, name: "all")
             state = "in game"
             playerState = "free"
             drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
@@ -334,6 +336,7 @@ class GameState {
         state = "stage transition"
         playerState = "free"
         stageTransitionTimer = stageTransitionTimerMax / 2
+        Board.reset()
         Board.nextStage()
         initEntities()
         //Board.orderOtherEntities()

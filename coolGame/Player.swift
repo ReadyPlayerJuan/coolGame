@@ -47,7 +47,7 @@ class Player: Entity {
         collisionType = 0
         collidesWithType = [0, 10, 11, 12, 13, 14, 15]
         collisionPriority = -1
-        drawPriority = 99
+        zPos = 99
         controllable = true
         isDynamic = true
         name = "player"
@@ -120,7 +120,7 @@ class Player: Entity {
             let line1 = SKShapeNode.init(path: path1.cgPath)
             line1.fillColor = UIColor.red
             line1.strokeColor = UIColor.clear
-            line1.zPosition = 50
+            line1.zPosition = zPos
             
             let path2 = UIBezierPath.init()
             path2.move(to: CGPoint(x: Double(Board.blockSize), y: Double(Board.blockSize)*size))
@@ -143,6 +143,7 @@ class Player: Entity {
             temp.fillColor = color
             temp.strokeColor = UIColor.clear
             temp.position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
+            temp.zPosition = zPos
             
             sprite = [temp]
         }

@@ -15,6 +15,8 @@ class MovingBlock: Entity {
     var color = UIColor.purple
     var falling = true
     
+    var movementTimer = 0.0
+    
     init(color: Int, dir: Int, xPos: Double, yPos: Double) {
         super.init()
         
@@ -26,7 +28,7 @@ class MovingBlock: Entity {
         name = "moving block"
         isDynamic = true
         collisionPriority = 10
-        drawPriority = 10
+        zPos = 10
         colorIndex = color
         
         if(colorIndex == -1) {
@@ -51,21 +53,48 @@ class MovingBlock: Entity {
     }
     
     override func update(delta: TimeInterval) {
+        let prevMovementTimer = movementTimer
         if(GameState.playerState == "free" || GameState.playerState == "rotating" || GameState.playerState == "changing color") {
             if((Board.direction + direction) % 2 == 0 && falling) {
-                yVel += GameState.gravity * delta
+                movementTimer += delta
+                
+                let prevHeight = heightAt(time: prevMovementTimer)
+                let nextHeight = heightAt(time: movementTimer)
+                yVel = nextHeight - prevHeight
+            } else if(xVel > 0) {
+                let prevHeight = heightAt(time: movementTimer)
+                let nextHeight = heightAt(time: movementTimer+delta)
+                xVel = nextHeight - prevHeight
+            } else if(xVel < 0) {
+                let prevHeight = heightAt(time: movementTimer)
+                let nextHeight = heightAt(time: movementTimer+delta)
+                xVel = nextHeight - prevHeight
+                xVel *= -1
+            } else {
+                movementTimer = 0
             }
         } else if(GameState.state == "rotating") {
             if(xVel > 0) {
-                xVel += GameState.gravity * delta
+                let prevHeight = heightAt(time: movementTimer)
+                let nextHeight = heightAt(time: movementTimer+delta)
+                xVel = nextHeight - prevHeight
             } else if(xVel < 0) {
-                xVel -= GameState.gravity * delta
+                let prevHeight = heightAt(time: movementTimer)
+                let nextHeight = heightAt(time: movementTimer+delta)
+                xVel = nextHeight - prevHeight
+                xVel *= -1
             }
+        } else {
+            movementTimer = 0
         }
         
         sprite[0].position = CGPoint(x: x * Double(Board.blockSize), y: -y * Double(Board.blockSize))
         
         super.update(delta: delta)
+    }
+    
+    private func heightAt(time: Double) -> Double {
+        return (GameState.gravity * (time * time)) + GameState.jumpHeight
     }
     
     func initColor() {
@@ -97,6 +126,7 @@ class MovingBlock: Entity {
                             
                             nextY = entity.nextY - 1
                             yVel = 0
+                            movementTimer = 0
                             
                             falling = false
                         }
@@ -105,6 +135,7 @@ class MovingBlock: Entity {
                             
                             nextX = entity.nextX + 1
                             xVel = 0
+                            movementTimer = 0
                             
                             falling = false
                         }
@@ -113,6 +144,7 @@ class MovingBlock: Entity {
                             
                             nextX = entity.nextX - 1
                             xVel = 0
+                            movementTimer = 0
                             
                             falling = false
                         }
@@ -125,6 +157,7 @@ class MovingBlock: Entity {
                             
                             nextY = entity.nextY - 1
                             yVel = 0
+                            movementTimer = 0
                             
                             if(!(entity as! MovingBlock).falling) {
                                 falling = false
@@ -135,6 +168,7 @@ class MovingBlock: Entity {
                             
                             nextX = entity.nextX + 1
                             xVel = 0
+                            movementTimer = 0
                             
                             if(!(entity as! MovingBlock).falling) {
                                 falling = false
@@ -145,6 +179,7 @@ class MovingBlock: Entity {
                             
                             nextX = entity.nextX - 1
                             xVel = 0
+                            movementTimer = 0
                             
                             if(!(entity as! MovingBlock).falling) {
                                 falling = false
@@ -161,6 +196,7 @@ class MovingBlock: Entity {
         s.position = CGPoint(x: x*Double(Board.blockSize), y: -y*Double(Board.blockSize))
         s.fillColor = color
         s.strokeColor = UIColor.clear
+        s.zPosition = zPos
         self.sprite = [s]
         
         if((direction + Board.direction) % 2 == 0) {
@@ -168,10 +204,12 @@ class MovingBlock: Entity {
             arrow1.strokeColor = UIColor.black
             arrow1.fillColor = UIColor.clear
             arrow1.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
+            arrow1.zPosition = 1
             let arrow2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: Double(Board.blockSize)*(2/3.0), y: Double(Board.blockSize)*((1/2.0) - (1/18.0))), rotation: 180.0, size: Double(Board.blockSize)*(1/3.0)))
             arrow2.strokeColor = UIColor.black
             arrow2.fillColor = UIColor.clear
             arrow2.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
+            arrow2.zPosition = 1
             sprite[0].addChild(arrow1)
             sprite[0].addChild(arrow2)
         } else {
@@ -179,10 +217,12 @@ class MovingBlock: Entity {
             arrow1.strokeColor = UIColor.black
             arrow1.fillColor = UIColor.clear
             arrow1.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
+            arrow1.zPosition = 1
             let arrow2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: Double(Board.blockSize)*((1/2.0) + (1/18.0)), y: Double(Board.blockSize)*(2/3.0)), rotation: -90.0, size: Double(Board.blockSize)*(1/3.0)))
             arrow2.strokeColor = UIColor.black
             arrow2.fillColor = UIColor.clear
             arrow2.lineWidth = CGFloat(Double(Board.blockSize) / 25.0)
+            arrow2.zPosition = 1
             sprite[0].addChild(arrow1)
             sprite[0].addChild(arrow2)
         }

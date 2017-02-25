@@ -34,6 +34,7 @@ class EditorManager {
     static var rotateRightButton: EditorButton!
     static var settingsButton: EditorButton!
     
+    static var quit: EditorButton!
     static var play: EditorButton!
     static var save: EditorButton!
     static var copyToClipboard: EditorButton!
@@ -106,6 +107,7 @@ class EditorManager {
                     copyToClipboard.update(active: true, delta: delta)
                     loadFromClipboard.update(active: true, delta: delta)
                     play.update(active: true, delta: delta)
+                    quit.update(active: true, delta: delta)
                     
                     menuButtonTimer -= 1
                     if(save.action) {
@@ -156,6 +158,14 @@ class EditorManager {
                         EntityManager.reloadAllEntities()
                         exitStageButton.sprite[0].alpha = 1.0
                     }
+                    if(quit.action) {
+                        Memory.saveStageEdit(code: encodeStageEdit())
+                        GameState.currentlyEditing = false
+                        GameState.inEditor = false
+                        inMenu = false
+                        drawNode.removeAllChildren()
+                        editorScene.controller.goToScene("menu")
+                    }
                     
                     if(InputController.currentTouches.count > 0 && InputController.prevTouches.count == 0 && menuButtonTimer <= 0) {
                         inMenu = false
@@ -179,6 +189,7 @@ class EditorManager {
                     reset.update(active: false, delta: delta)
                     copyToClipboard.update(active: false, delta: delta)
                     loadFromClipboard.update(active: false, delta: delta)
+                    quit.update(active: false, delta: delta)
                     
                     //check for input, pan and zoom if two touches found
                     dragTimer -= 1
@@ -777,30 +788,35 @@ class EditorManager {
         
         
         let bwidth = (0.60*Double(width))
-        let bheight = (0.14*Double(height))
-        let numMenuItems = 5.0
+        let bheight = (0.13*Double(height))
+        let menuBorder = Int(Double(border) * 0.7)
+        let numMenuItems = 6.0
         
-        let temp = (Double(border)*(numMenuItems / 2.0))
+        let temp = (Double(menuBorder)*(numMenuItems / 2.0))
         let top = temp + (bheight*((numMenuItems-2) / 2.0))
         
         var itemIndex = 0.0
         
-        save = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Save")
+        save = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(menuBorder)))), width: Int(bwidth), height: Int(bheight), leniency: menuBorder, type: 3, colorIndex: 0, btext: "Save")
         
         itemIndex += 1
-        copyToClipboard = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Copy to Clipboard")
+        copyToClipboard = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(menuBorder)))), width: Int(bwidth), height: Int(bheight), leniency: menuBorder, type: 3, colorIndex: 0, btext: "Copy to Clipboard")
         
         itemIndex += 1
-        loadFromClipboard = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Load from Clipboard")
+        loadFromClipboard = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(menuBorder)))), width: Int(bwidth), height: Int(bheight), leniency: menuBorder, type: 3, colorIndex: 0, btext: "Load from Clipboard")
         loadFromClipboard.sprite[1].position = CGPoint(x: -9999, y: -9999)
         
         itemIndex += 1
-        reset = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Reset")
+        reset = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(menuBorder)))), width: Int(bwidth), height: Int(bheight), leniency: menuBorder, type: 3, colorIndex: 0, btext: "Reset")
         reset.sprite[1].position = CGPoint(x: -9999, y: -9999)
         
         itemIndex += 1
-        play = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(border)))), width: Int(bwidth), height: Int(bheight), leniency: border, type: 3, colorIndex: 0, btext: "Play")
+        play = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(menuBorder)))), width: Int(bwidth), height: Int(bheight), leniency: menuBorder, type: 3, colorIndex: 0, btext: "Play")
         play.sprite[1].position = CGPoint(x: -9999, y: -9999)
+        
+        itemIndex += 1
+        quit = EditorButton.init(x: -Int(bwidth/2.0), y: Int(top - (itemIndex * (bheight + Double(menuBorder)))), width: Int(bwidth), height: Int(bheight), leniency: menuBorder, type: 3, colorIndex: 0, btext: "Quit")
+        quit.sprite[1].position = CGPoint(x: -9999, y: -9999)
         
         for s in save.sprite {
             menu.addChild(s)
@@ -815,6 +831,9 @@ class EditorManager {
             menu.addChild(s)
         }
         for s in play.sprite {
+            menu.addChild(s)
+        }
+        for s in quit.sprite {
             menu.addChild(s)
         }
     }
@@ -1079,7 +1098,12 @@ class EditorManager {
                 trimBottomRow()
             }
         }
-        
+        /*
+        addLeftRow()
+        addRightRow()
+        addTopRow()
+        addBottomRow()
+        */
         completeRedraw()
     }
     

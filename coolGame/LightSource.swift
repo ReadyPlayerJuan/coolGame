@@ -27,7 +27,7 @@ class LightSource: Entity {
         name = "light source"
         isDynamic = false
         collisionPriority = 0
-        drawPriority = 15
+        zPos = 15
         
         collidesWithType = [0, 10, 11, 12, 13, 14, 15]
         collisionType = 0
@@ -48,11 +48,12 @@ class LightSource: Entity {
         
         var center = CGPoint()
         if(type == 0) {
-            center = CGPoint(x: x, y: y)
+            center = CGPoint(x: x+0.5, y: y-0.5)
         } else {
             let player = EntityManager.getPlayer() as! Player
             center = CGPoint(x: player.x + 0.5, y: player.y - ((sqrt(3.0)/2.0) * (2.0 / 3.0)))
         }
+        
         
         for ls in stageEdges {
             ls.info = ls.distanceTo(point: center)
@@ -69,18 +70,92 @@ class LightSource: Entity {
             }
             sortedSegments.insert(ls, at: index)
         }
-        if(stageEdges.count > 0) {
-            //sortedSegments.append(stageEdges[0])
-            //sortedSegments.append(stageEdges[1])
-            //sortedSegments.append(stageEdges[2])
-            //sortedSegments.append(stageEdges[3])
-            //sortedSegments.append(stageEdges[6])
+        
+        
+        
+        var confirmedSegments = [LineSegment]()
+        var confirmedSegmentSpritePoints = [[CGPoint]]()
+        
+        for ls in sortedSegments {
+            var numVisiblePoints = 0
+            for p in ls.points {
+                var blocked = false
+                if(confirmedSegments.count > 0) {
+                    for ls2 in confirmedSegments {
+                        if(!blocked && linesIntersect(ls2, with: LineSegment.init(center, p))) {
+                            blocked = true
+                        }
+                    }
+                }
+                
+                if(!blocked) {
+                    numVisiblePoints += 1
+                }
+            }
+            
+            switch(numVisiblePoints) {
+            case 0:
+                // line segment is not visible
+                break
+            case 1:
+                // part of the segment is visible
+                //to be addded
+                break
+            case 2:
+                //all of the segment is visible
+                confirmedSegments.append(ls)
+                confirmedSegmentSpritePoints.append(ls.points)
+                break
+            default:
+                break
+            }
+        }
+        let size = CGFloat(Board.blockSize)
+        
+        let temp = SKShapeNode.init(rect: CGRect.init(x: -20, y: -20, width: 40, height: 40))
+        temp.fillColor = UIColor.red
+        temp.alpha = 0.5
+        temp.position = CGPoint(x: (center.x * size), y: (-center.y * size))
+        temp.zPosition = 1
+        sprite[0].addChild(temp)
+        
+        var s: SKShapeNode
+        /*
+        for p in confirmedSegmentSpritePoints {
+            let b = UIBezierPath.init()
+            b.move(to: CGPoint(x: 0, y: 0))
+            b.addLine(to: CGPoint(x: p[0].x * size, y: -p[0].y * size))
+            b.addLine(to: CGPoint(x: p[1].x * size, y: -p[1].y * size))
+            
+            s = SKShapeNode.init(path: b.cgPath)
+            
+            s.position = CGPoint(x: (center.x * size), y: (-center.y * size))
+            s.fillColor = UIColor.init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
+            s.strokeColor = UIColor.clear
+            sprite[0].addChild(s.copy() as! SKShapeNode)
+        }*/
+        for ls in confirmedSegments {
+            if(ls.vertical) {
+                s = SKShapeNode.init(rect: CGRect.init(x: ls.points[0].x*size - 10, y: -ls.points[0].y*size, width: 20, height: (ls.points[0].y-ls.points[1].y)*size))
+                s.fillColor = UIColor.green
+                s.alpha = 0.4
+                s.zPosition = 2
+                sprite[0].addChild(s.copy() as! SKShapeNode)
+            } else {
+                s = SKShapeNode.init(rect: CGRect.init(x: ls.points[0].x*size, y: -ls.points[0].y*size-10, width: (ls.points[0].x-ls.points[1].x)*size, height: 20))
+                s.fillColor = UIColor.green
+                s.alpha = 0.4
+                s.zPosition = 2
+                sprite[0].addChild(s.copy() as! SKShapeNode)
+            }
         }
         
+        /*
         var s: SKShapeNode
         
         let size = CGFloat(Board.blockSize)
         let shadowDistance = CGFloat(400.0)
+        
         
         for ls in sortedSegments {
             let point0 = ls.points[0]
@@ -142,11 +217,23 @@ class LightSource: Entity {
             s.fillColor = UIColor.init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
             s.strokeColor = UIColor.clear
             sprite[0].addChild(s.copy() as! SKShapeNode)
+        }*/
+    }
+    
+    private func linesIntersect(_ this: LineSegment, with: LineSegment) -> Bool {
+        if(this.vertical) {
+            let slope = (with.points[1].y - with.points[0].y) / (with.points[1].x - with.points[0].x)
+            let yPos = (slope * (this.points[0].x - with.points[0].x)) + with.points[0].y
+            return ((yPos > this.points[0].y && yPos < this.points[1].y) || (yPos < this.points[0].y && yPos > this.points[1].y))
+        } else {
+            let slope = (with.points[1].x - with.points[0].x) / (with.points[1].y - with.points[0].y)
+            let xPos = (slope * (this.points[0].y - with.points[0].y)) + with.points[0].x
+            return ((xPos > this.points[0].x && xPos < this.points[1].x) || (xPos < this.points[0].x && xPos > this.points[1].x))
         }
     }
     
     override func loadSprite() {
-        
+        sprite[0].zPosition = zPos
     }
     
     func loadStageInfo() {

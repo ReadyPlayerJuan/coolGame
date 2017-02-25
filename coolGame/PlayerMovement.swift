@@ -81,6 +81,7 @@ extension Player {
     func rotate(delta: Double) {
         yVel = 0
         verticalMovementTimer = 0
+        horizontalMovementTimer = 0
         nextY = Double(Int(nextY + 0.5))
         
         let rotateSpeed = 2.5

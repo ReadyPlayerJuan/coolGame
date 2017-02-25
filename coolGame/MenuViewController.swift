@@ -11,24 +11,69 @@ import SpriteKit
 import GameplayKit
 
 class MenuViewController: UIViewController {
-    //var menuscene: MenuScene!
+    static var mainView: SKView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         if let view = self.view as! SKView? {
-            // Load the SKScene from 'GameScene.sks'
+            MenuViewController.mainView = view
+            
             if let scene = SKScene(fileNamed: "MenuScene") {
-                // Set the scale mode to scale to fit the window
-                scene.scaleMode = .aspectFill
-                //menuscene = scene as! MenuScene
+                (scene as! MenuScene).controller = self
+                scene.scaleMode = .resizeFill
                 
-                // Present the scene
                 view.presentScene(scene)
             }
             
+            view.isMultipleTouchEnabled = true
             view.ignoresSiblingOrder = true
             view.showsFPS = true
+            view.showsNodeCount = true
+            view.shouldCullNonVisibleNodes = true
+        }
+    }
+    
+    func goToScene(_ name: String) {
+        InputController.resetTouches()
+        
+        if let view = self.view as! SKView? {
+            
+            if(name == "menu") {
+                if let scene = SKScene(fileNamed: "MenuScene") {
+                    (scene as! MenuScene).controller = self
+                    scene.scaleMode = .resizeFill
+                    
+                    view.presentScene(scene)
+                }
+            } else if(name == "game") {
+                if let scene = SKScene(fileNamed: "GameScene") {
+                    (scene as! GameScene).controller = self
+                    scene.scaleMode = .resizeFill
+                    
+                    view.presentScene(scene)
+                }
+            } else if(name == "editor") {
+                if let scene = SKScene(fileNamed: "EditorScene") {
+                    (scene as! EditorScene).controller = self
+                    scene.scaleMode = .resizeFill
+                    
+                    view.presentScene(scene)
+                }
+            } else if(name == "instructions") {
+                if let scene = SKScene(fileNamed: "InfoScene") {
+                    (scene as! InfoScene).controller = self
+                    scene.scaleMode = .resizeFill
+                    
+                    view.presentScene(scene)
+                }
+            }
+            
+            view.isMultipleTouchEnabled = true
+            view.ignoresSiblingOrder = true
+            view.showsFPS = true
+            view.showsNodeCount = true
+            view.shouldCullNonVisibleNodes = true
         }
     }
     

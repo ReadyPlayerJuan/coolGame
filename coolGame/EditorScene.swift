@@ -23,6 +23,7 @@ class EditorScene: SKScene {
     var delta = 0.0
     
     var mainView: SKView!
+    var controller: MenuViewController!
     var prevTime = 0.0
     
     override func didMove(to view: SKView) {

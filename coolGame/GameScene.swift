@@ -11,8 +11,6 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
-    //var drawLayer: CALayer!
-    //var rotateLayer: CALayer!
     var drawNode: SKShapeNode!
     var rotateNode: SKShapeNode!
     
@@ -22,33 +20,17 @@ class GameScene: SKScene {
     var delta = 0.0
     
     var mainView: SKView!
+    var controller: UIViewController!
     var prevTime = 0.0
     
     override func didMove(to view: SKView) {
         mainView = view
         beginGame()
-        
-        //UIPasteboard.general.string = "Hello world"
     }
     
     func beginGame() {
         backgroundColor = Board.backgroundColor
         
-        //configure main layer
-        /*
-        rotateLayer = CALayer()
-        drawLayer = CALayer()
-        
-        rotateLayer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        rotateLayer.position = CGPoint(x: GameScene.screenWidth/2.0, y: GameScene.screenHeight/2.0)
-        rotateLayer.bounds = CGRect(x: 0.0, y: 0.0, width: GameScene.screenWidth, height: GameScene.screenHeight)
-        mainView.layer.addSublayer(rotateLayer)
-        
-        rotateLayer.addSublayer(drawLayer)
-        
-        GameState.gamescene = self
-        GameState.drawLayer = drawLayer
-        GameState.rotateLayer = rotateLayer*/
         
         GameState.gamescene = self
         
@@ -65,8 +47,10 @@ class GameScene: SKScene {
         GameState.drawNode = drawNode
         GameState.rotateNode = rotateNode
         
-        GameState.ignoreDelta = true
         GameState.beginGame()
+        GameState.ignoreDelta = true
+        GameState.update(delta: 0)
+        GameState.ignoreDelta = true
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

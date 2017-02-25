@@ -11,6 +11,8 @@ import SpriteKit
 
 extension Player {
     func loadDeathEffect(delta: Double) {
+        horizontalMovementTimer = 0
+        verticalMovementTimer = 0
         sprite[0].removeAllChildren()
         
         respawnEffect = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: 0.0, size: Double(Board.blockSize)))
@@ -31,6 +33,7 @@ extension Player {
         s.strokeColor = UIColor.clear
         deathParticleColor = loadColor(colIndex: colorIndex)
         s.alpha = 1.0
+        s.zPosition = 1
         
         deathParticleInfo = []
         deathParticles = []

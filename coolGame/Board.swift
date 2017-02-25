@@ -16,8 +16,8 @@ class Board {
     static var blocks: [[Block?]]!
     static var otherEntities: [Entity] = []
     
-    static let defaultBlockSize: Double = 50.0
-    static var blockSize: Double = 50.0
+    static let defaultBlockSize: Double = Double(Int(GameState.screenHeight / 5.0))
+    static var blockSize: Double = defaultBlockSize
     static var spawnPoint: CGPoint!
     static var colorTheme = 0
     static var direction = 0
@@ -25,9 +25,6 @@ class Board {
     
     static var stageNum = -1
     
-    //static let blackBlockCategory: UInt32 = UInt32(exactly: 0)!
-    //static let whiteBlockCategory: UInt32 = UInt32(exactly: 1)!
-    //static let playerCategory: UInt32 = UInt32(exactly: 99)!
     
     static let gray = CGFloat(0.25)
     static let backgroundColor = UIColor.init(red: gray, green: gray, blue: gray, alpha: 1.0)
@@ -36,6 +33,7 @@ class Board {
         if(GameState.inEditor) {
             currentStage = Stage.loadStage(code: Memory.getStageEdit())
         } else {
+            blockSize = defaultBlockSize
             if(currentStage == nil) {
                 loadAllStages()
                 currentStage = hubStage
@@ -48,7 +46,6 @@ class Board {
             }
         }
         
-        blockSize = defaultBlockSize
         direction = 0
         let temp: [[Int]]! = currentStage?.blocks
         spawnPoint = currentStage?.spawnPoint
@@ -86,6 +83,15 @@ class Board {
                 }
             }
         }
+    }
+    
+    class func reset() {
+        currentStage = nil
+        direction = 0
+        blocks = [[Block]]()
+        otherEntities = [Entity]()
+        colorTheme = 0
+        blockSize = defaultBlockSize
     }
     
     class func rotate() {
@@ -220,16 +226,15 @@ class Board {
         let stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0,-11,0, 1],
                         [1,-41,99,99,0, 0, 0, 0, 3,99, 1],
-                        [1, 0, 0, 0,99, 0, 0, 0, 4, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 1],
                         [1, 0, 0, 0, 0, 0, 3, 0,342,0, 1],
-                        [1, 0, 0, 0,013, 0, 0, 3, 4,113,1],
+                        [1, 0, 0, 0, 0, 0, 0, 3, 4,113,1],
                         [1, 0, 0, 3, 0, 0, 3, 0, 4,112,1],
-                        [1, 0, 0, 3,313,0, 0, 0, 0, 0, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [99,99,99,99,99,99,99,99,99,99,99] ]
+                        [1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
         let spawnPoint = CGPoint(x: 1, y: 6)
         let exitTargets = [[1, 2, 0], [8, 1, 1]]
-        let otherEntities = [MovingBlock.init(color: 1, dir: 1, xPos: 3, yPos: 5)]//, LightSource.init(type: 1, xPos: 2.5, yPos: 4.5)]
+        let otherEntities = [MovingBlock.init(color: 1, dir: 1, xPos: 3, yPos: 5), LightSource.init(type: 0, xPos: 1, yPos: 7)]
         
         hubStage = Stage.init(withBlocks: stage, entities: otherEntities, spawn: spawnPoint, withName: "hub", exits: exitTargets)
         StageSet1.loadStages(base: hubStage)

@@ -33,7 +33,7 @@ class Block: Entity {
         collidesWithType = [0]
         collisionPriority = 99
         name = "block"
-        drawPriority = 1
+        zPos = 1
         
         switch(type) {
         case 0: //black nonsolid block
@@ -197,6 +197,7 @@ class Block: Entity {
             s.position = CGPoint(x: x*Double(Board.blockSize), y: -y*Double(Board.blockSize))
             s.fillColor = color
             s.strokeColor = UIColor.clear
+            s.zPosition = zPos
             self.sprite = [s]
         } else if(type == 3 || type == 4) {
             
@@ -229,11 +230,13 @@ class Block: Entity {
                 s.position = CGPoint(x: unmodified.x*CGFloat(Board.blockSize), y: -unmodified.y*CGFloat(Board.blockSize))
                 s.fillColor = color
                 s.strokeColor = UIColor.clear
+                s.zPosition = zPos
                 
                 let s2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: -90.0 * Double(Board.direction - direction), size: Double(Board.blockSize)))
                 s2.position = CGPoint(x: point.x*CGFloat(Board.blockSize), y: -point.y*CGFloat(Board.blockSize))
                 //s2.fillColor = UIColor.purple //color is set in updateSprite()
                 s2.strokeColor = UIColor.clear
+                s2.zPosition = zPos+1
                 
                 self.sprite = [s, s2]
                 
@@ -245,11 +248,13 @@ class Block: Entity {
                 s.position = CGPoint(x: unmodified.x*CGFloat(Board.blockSize), y: -unmodified.y*CGFloat(Board.blockSize))
                 s.fillColor = color
                 s.strokeColor = UIColor.clear
+                s.zPosition = zPos
                 
                 let s2 = SKShapeNode.init(path: getTrianglePath(corner: CGPoint(x: 0, y: 0), rotation: -90.0 * Double(Board.direction - direction), size: Double(Board.blockSize)))
                 s2.position = CGPoint(x: point.x*CGFloat(Board.blockSize), y: -point.y*CGFloat(Board.blockSize))
                 s2.fillColor = color2
                 s2.strokeColor = UIColor.clear
+                s2.zPosition = zPos
                 
                 self.sprite = [s, s2]
             }

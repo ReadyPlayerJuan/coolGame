@@ -15,13 +15,14 @@ class Entity {
     var collisionType = 0
     var collidesWithType = [0]
     var collisionPriority = 0
-    var drawPriority = 0
     var isDangerous = false
     
     var name = ""
     
     var controllable = false
     var nextX = 0.0, nextY = 0.0
+    
+    var zPos: CGFloat = 0.0
     
     var ID: Int = 0
     
