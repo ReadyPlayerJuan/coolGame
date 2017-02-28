@@ -14,7 +14,7 @@ class EntityManager {
     static var entitiesByCollisionPriority: [Entity] = []
     static var nextID = 0
     static let collisionRadius = 2.0
-    static var collisionIterations = 2
+    static var collisionIterations = 3
     
     static func addEntity(entity: Entity) {
         entities.append(entity)
@@ -24,8 +24,8 @@ class EntityManager {
     static func updateEntities(delta: TimeInterval) {
         if let p = (EntityManager.getPlayer()) {
             let vel = hypot(p.xVel, p.yVel)
-            if(vel > 2) {
-                collisionIterations = Int(vel)
+            if(vel > 1) {
+                collisionIterations = Int(vel)+3
             }
         }
         for _ in 0...collisionIterations-1 {

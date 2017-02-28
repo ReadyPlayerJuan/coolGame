@@ -54,7 +54,7 @@ class MenuScene: SKScene {
         currentItemIndex += 1
         bgcolor = UIColor.init(red: 0.2, green: 0.2, blue: 0.7, alpha: 1.0)
         txcolor = UIColor.init(red: 0.4, green: 0.4, blue: 0.9, alpha: 1.0)
-        startInstructions = MenuButton.init(x: -width/2, y: -height/2 - (currentItemIndex * (height + border)) + Int((Double(numItems-1)/2.0) * Double(height + border)), width: width, height: height, text: "info", textColor: txcolor, color: bgcolor)
+        startInstructions = MenuButton.init(x: -width/2, y: -height/2 - (currentItemIndex * (height + border)) + Int((Double(numItems-1)/2.0) * Double(height + border)), width: width, height: height, text: "testing", textColor: txcolor, color: bgcolor)
         view.scene?.addChild(startInstructions.sprite)
     }
     
@@ -86,7 +86,7 @@ class MenuScene: SKScene {
             controller.goToScene("editor")
         }
         if(startInstructions.isPressed) {
-            controller.goToScene("instructions")
+            controller.goToScene("testing")
         }
     }
 }

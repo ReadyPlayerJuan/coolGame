@@ -17,6 +17,8 @@ class Block: Entity {
     var direction: Int = 0
     var color: UIColor = UIColor.purple
     
+    var inverted = false
+    
     var hazardCycle = 15.0
     var colorProgressionBase = 0.0
     var previousColorProgression = 0.0
@@ -104,15 +106,37 @@ class Block: Entity {
         loadSprite()
     }
     
+    func invert() {
+        inverted = !inverted
+        initColor()
+        loadSprite()
+        
+        if((type == 2 || type == 3 || type == 4) && colorIndex >= 0) {
+            if(inverted) {
+                collisionType = colorIndex + 20
+            } else {
+                collisionType = colorIndex + 10
+            }
+        }
+    }
+    
     func initColor() {
         //var color = UIColor.purple
         if(type == 0 || type == 1 || (type == 3 && colorIndex == -1) || (type == 4 && colorIndex == -1)) {
             let blockVariation = Int(rand()*Board.colorVariation)
             
             if(type == 0 || ((type == 3 || type == 4) && colorIndex == -1)) {
-                color = UIColor(red: 0.0+(CGFloat(blockVariation)/255.0), green: 0.0+(CGFloat(blockVariation)/255.0), blue: 0.0+(CGFloat(blockVariation)/255.0), alpha: 1.0)
+                if(inverted) {
+                    color = UIColor(red: 1.0-(CGFloat(blockVariation)/255.0), green: 1.0-(CGFloat(blockVariation)/255.0), blue: 1.0-(CGFloat(blockVariation)/255.0), alpha: 1.0)
+                } else {
+                    color = UIColor(red: 0.0+(CGFloat(blockVariation)/255.0), green: 0.0+(CGFloat(blockVariation)/255.0), blue: 0.0+(CGFloat(blockVariation)/255.0), alpha: 1.0)
+                }
             } else {
-                color = UIColor(red: 1.0-(CGFloat(blockVariation)/255.0), green: 1.0-(CGFloat(blockVariation)/255.0), blue: 1.0-(CGFloat(blockVariation)/255.0), alpha: 1.0)
+                if(inverted) {
+                    color = UIColor(red: 0.0+(CGFloat(blockVariation)/255.0), green: 0.0+(CGFloat(blockVariation)/255.0), blue: 0.0+(CGFloat(blockVariation)/255.0), alpha: 1.0)
+                } else {
+                    color = UIColor(red: 1.0-(CGFloat(blockVariation)/255.0), green: 1.0-(CGFloat(blockVariation)/255.0), blue: 1.0-(CGFloat(blockVariation)/255.0), alpha: 1.0)
+                }
             }
         } else if(type == 2 || type == 3 || type == 4) {
             let n = 1.0
@@ -123,7 +147,11 @@ class Block: Entity {
                 colorArray[index] = max(min(colorArray[index] + blockVariation, 255), 0)
             }
             
-            color = UIColor(red: CGFloat(colorArray[0]) / 255.0, green: CGFloat(colorArray[1]) / 255.0, blue: CGFloat(colorArray[2]) / 255.0, alpha: 1.0)
+            if(inverted) {
+                color = UIColor(red: 1-(CGFloat(colorArray[0]) / 255.0), green: 1-(CGFloat(colorArray[1]) / 255.0), blue: 1-(CGFloat(colorArray[2]) / 255.0), alpha: 1.0)
+            } else {
+                color = UIColor(red: CGFloat(colorArray[0]) / 255.0, green: CGFloat(colorArray[1]) / 255.0, blue: CGFloat(colorArray[2]) / 255.0, alpha: 1.0)
+            }
         } else if(type == 5) {
             color = UIColor.clear
         }
@@ -187,7 +215,11 @@ class Block: Entity {
             g = min(1.0, max(0.0, g + flicker))
             b = min(1.0, max(0.0, b + flicker))
             
-            sprite[0].fillColor = UIColor.init(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
+            if(inverted) {
+                sprite[0].fillColor = UIColor.init(red: 1-CGFloat(r), green: 1-CGFloat(g), blue: 1-CGFloat(b), alpha: 1.0)
+            } else {
+                sprite[0].fillColor = UIColor.init(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
+            }
         }
     }
     
@@ -242,7 +274,12 @@ class Block: Entity {
                 
                 updateSprite()
             } else {
-                let color2 = UIColor(red: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][0])/255.0, green: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][1])/255.0, blue: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][2])/255.0, alpha: 1.0)
+                var color2: UIColor!
+                if(inverted) {
+                    color2 = UIColor(red: 1-CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][0])/255.0, green: 1-CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][1])/255.0, blue: 1-CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][2])/255.0, alpha: 1.0)
+                } else {
+                    color2 = UIColor(red: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][0])/255.0, green: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][1])/255.0, blue: CGFloat(ColorTheme.colors[Board.colorTheme][colorIndex2][2])/255.0, alpha: 1.0)
+                }
                 
                 let s = SKShapeNode.init(rect: CGRect.init(x: 0, y: 0, width: Double(Board.blockSize+0), height: Double(Board.blockSize+0)))
                 s.position = CGPoint(x: unmodified.x*CGFloat(Board.blockSize), y: -unmodified.y*CGFloat(Board.blockSize))

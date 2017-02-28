@@ -13,11 +13,13 @@ class LineSegment {
     var points: [CGPoint]
     var vertical = false
     var info: Double
+    var distance: CGFloat
     
     init(_ p1: CGPoint, _ p2: CGPoint) {
         points = [p1, p2]
         vertical = (p1.x == p2.x)
         info = 999
+        distance = hypot(p1.y-p2.y, p1.x-p2.x)
     }
     
     func equals(_ ls: LineSegment) -> Bool {

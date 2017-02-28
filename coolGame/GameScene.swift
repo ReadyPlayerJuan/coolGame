@@ -13,6 +13,7 @@ import GameplayKit
 class GameScene: SKScene {
     var drawNode: SKShapeNode!
     var rotateNode: SKShapeNode!
+    var superNode: SKShapeNode!
     
     static let screenHeight = UIScreen.main.fixedCoordinateSpace.bounds.width
     static let screenWidth = UIScreen.main.fixedCoordinateSpace.bounds.height
@@ -34,6 +35,9 @@ class GameScene: SKScene {
         
         GameState.gamescene = self
         
+        superNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+        superNode.strokeColor = UIColor.clear
+        superNode.fillColor = UIColor.clear
         drawNode = SKShapeNode.init(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
         drawNode.strokeColor = UIColor.clear
         drawNode.fillColor = UIColor.clear
@@ -41,11 +45,13 @@ class GameScene: SKScene {
         rotateNode.strokeColor = UIColor.clear
         rotateNode.fillColor = UIColor.clear
         
-        addChild(rotateNode)
+        addChild(superNode)
+        superNode.addChild(rotateNode)
         rotateNode.addChild(drawNode)
         
         GameState.drawNode = drawNode
         GameState.rotateNode = rotateNode
+        GameState.superNode = superNode
         
         GameState.beginGame()
         GameState.ignoreDelta = true

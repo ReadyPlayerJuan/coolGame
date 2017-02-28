@@ -54,7 +54,7 @@ class MovingBlock: Entity {
     
     override func update(delta: TimeInterval) {
         let prevMovementTimer = movementTimer
-        if(GameState.playerState == "free" || GameState.playerState == "rotating" || GameState.playerState == "changing color") {
+        if(GameState.playerState == "free" || GameState.playerState == "rotating" || GameState.playerState == "changing color" || GameState.playerState == "respawning") {
             if((Board.direction + direction) % 2 == 0 && falling) {
                 movementTimer += delta
                 

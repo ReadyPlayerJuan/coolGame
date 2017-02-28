@@ -10,6 +10,8 @@ import Foundation
 import GameplayKit
 
 class Player: Entity {
+    static var maxAbilities = 1
+    
     var movementTotal = 0.0
     
     var rotation = 0.0
@@ -45,7 +47,7 @@ class Player: Entity {
         super.init()
         
         collisionType = 0
-        collidesWithType = [0, 10, 11, 12, 13, 14, 15]
+        collidesWithType = [0, 10, 11, 12, 13, 14, 15, 20, 21, 22, 23, 24, 25]
         collisionPriority = -1
         zPos = 99
         controllable = true
@@ -235,8 +237,8 @@ class Player: Entity {
     override func move() {
         movementTotal += hypot(x - nextX, y - nextY)
         
-        GameState.playerX = nextX
-        GameState.playerY = nextY
+        //GameState.playerX = nextX
+        //GameState.playerY = nextY
         
         super.move()
     }

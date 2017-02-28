@@ -30,7 +30,11 @@ class StageSet1 {
         var otherEntities: [Entity]!
         otherEntities = []
         var exitTargets: [[Int]]!
+        var infoScreens = [Int]()
+        var playerAbilities = 1
         var name = "no name found"
+        var colorTheme: Int
+        colorTheme = 0
         
         /*
          stage writing guide:
@@ -44,21 +48,24 @@ class StageSet1 {
          - -9 is invisible impassable block, to create illusion of no blocks
          - -AB is end gate, where A-1 is direction and B-2 is colorIndex of surrounding block
          - ABC is color change, where A is direction, B-2 is colorIndex of surrounding block, and c-2 is colorIndex of color change triangle
-        */
+         - 99 is a hazard block
+         */
         
         switch(index) {
         case 0:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                        [1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1],
-                        [1, 0, 0, 0, 0, 0, 0,-11,0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0,-11,0, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
                         [1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1],
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                        [1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1],
-                        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1],
                         [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
-            spawnPoint = CGPoint(x: 3, y: 4)
-            exitTargets = [[7, 3, 0]]
+            spawnPoint = CGPoint(x: 2, y: 6)
+            exitTargets = [[10, 3, 0]]
+            infoScreens = [0]
+            playerAbilities = 0
             name = "platform parkour"; break
         case 1:
             stage =   [ [-9,-9,-9,-9,-9,-9,-9,1, 1, 1, 1, 1, 1],
@@ -74,6 +81,7 @@ class StageSet1 {
                         [1, 1, 1, 1, 1, 1,-9,-9,-9,-9,-9,-9,-9] ]
             spawnPoint = CGPoint(x: 2, y: 9);
             exitTargets = [[10, 1, 0]]
+            infoScreens = [1]
             name = "rotating rectangles"; break
         case 2:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -88,6 +96,7 @@ class StageSet1 {
             //otherEntities.append(MovingBlock.init(color: 0, dir: 0, xPos: 2, yPos: 1))
             spawnPoint = CGPoint(x: 4, y: 6);
             exitTargets = [[16, 4, 0]]
+            infoScreens = [2]
             name = "colorful creations"; break
         case 3:
             stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1,-9,-9, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -141,6 +150,9 @@ class StageSet1 {
             name = "default"; break
         }
         
-        return Stage.init(withBlocks: stage!, entities: otherEntities, spawn: spawnPoint, withName: name, exits: exitTargets)
+        let s = Stage.init(withBlocks: stage!, entities: otherEntities, spawn: spawnPoint, withName: name, exits: exitTargets, colorTheme: colorTheme)
+        s.infoScreens = infoScreens
+        s.playerAbilities = playerAbilities
+        return s
     }
 }

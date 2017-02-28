@@ -151,7 +151,11 @@ extension Player {
         sprite[0].removeAllChildren()
         
         collidesWithType = [0]
-        collidesWithType.append(colorIndex+10)
+        if(Board.blocks[Int(y+0.5)][Int(x+0.5)]?.inverted)! {
+            collidesWithType.append(colorIndex+20)
+        } else {
+            collidesWithType.append(colorIndex+10)
+        }
         
         if(colorIndex == -1) {
             GameState.beginStageTransition()

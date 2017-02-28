@@ -10,35 +10,31 @@ import Foundation
 import SpriteKit
 
 class GameState {
-    static let screenBound = UIScreen.main.bounds.width
     static let screenHeight = UIScreen.main.fixedCoordinateSpace.bounds.width
     static let screenWidth = UIScreen.main.bounds.width
     
     static var gamescene: GameScene!
     static var editorscene: EditorScene!
     
-    //static var drawLayer: CALayer!
-    //static var rotateLayer: CALayer!
+    static var superNode: SKShapeNode!
     static var drawNode: SKShapeNode!
     static var rotateNode: SKShapeNode!
-    
-    static var playerX = 0.0
-    static var playerY = 0.0
     
     static var state = "in menu"
     static var playerState = "free"
     static var inEditor = false
     static var currentlyEditing = false
     
-    static var currentDelta = 0.0
+    static var playerAbilities = 0
     
+    static var currentDelta = 0.0
     static var ignoreDelta = true
     
     static var firstFrame = false
     static var lastFrame = false
     
     static var stageTransitionTimer = 0.0
-    static let stageTransitionTimerMax = 5.0
+    static let stageTransitionTimerMax = 4.0
     static var stageTransitionAngle = 0.0
     static var swappedStages = false
     static var exitTarget = 0
@@ -52,20 +48,28 @@ class GameState {
     static var colorChangeTimer = 0.0
     static let colorChangeTimerMax = 1.0
     
+    static var infoScreenNum = 0
+    static var infoScreenState = ""
+    static var infoScreenTimer = 0.0
+    static let infoScreenFadeDuration = 0.5
+    static let maxInfoScreenAlpha = 1.0
+    static var infoImage: SKSpriteNode!
+    
     static var deathTimer = 0.0
     static let deathTimerMax = 4.0
     static var numRotations = 0
     static var prevDirection = 0
     
     static let maxMoveSpeed = 4.2
-    static let slideLength = 0.10
+    static let slideLength = 0.1
     static let accelerationBonus = 3.0
     static let jumpHeight = 2.25
-    static let jumpLength = 0.38
+    static let jumpLength = 0.68
     static let gravity = jumpHeight / (pow(jumpLength, 2))
     
-    static var globalRand = 0.0
+    static var testing = false
     
+    static var globalRand = 0.0
     static var time = 0.0
     
     class func initEntities() {
@@ -161,6 +165,11 @@ class GameState {
                     state = "in game"
                     playerState = "free"
                     drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y - 0.5) * Double(Board.blockSize)))
+                    
+                    infoScreenNum = 0
+                    if((Board.currentStage?.infoScreens.count)! > 0) {
+                        GameState.gameAction(type: "info")
+                    }
                 }
             }
             
@@ -209,6 +218,29 @@ class GameState {
             EntityManager.updateEntities(delta: currentDelta)
             drawNode.position = CGPoint(x: -((EntityManager.getPlayer()!.x + Double(getDeathVector().dx) + 0.5) * Double(Board.blockSize)), y: ((EntityManager.getPlayer()!.y + Double(getDeathVector().dy) - 0.5) * Double(Board.blockSize)))
             rotateNode.zRotation = CGFloat(getDeathRotation())
+        } else if(state == "info screen") {
+            if(infoScreenState == "fade in") {
+                infoScreenTimer += delta
+                if(infoScreenTimer >= infoScreenFadeDuration) {
+                    infoScreenTimer = infoScreenFadeDuration
+                    infoScreenState = "visible"
+                }
+                infoImage.alpha = CGFloat(maxInfoScreenAlpha * (infoScreenTimer / infoScreenFadeDuration))
+            } else if(infoScreenState == "visible") {
+                infoImage.alpha = CGFloat(maxInfoScreenAlpha)
+                if(InputController.currentTouches.count > 0) {
+                    infoScreenState = "fade out"
+                }
+            } else if(infoScreenState == "fade out") {
+                infoScreenTimer -= delta
+                infoImage.alpha = CGFloat(maxInfoScreenAlpha * (infoScreenTimer / infoScreenFadeDuration))
+                if(infoScreenTimer <= 0) {
+                    infoScreenTimer = 0
+                    state = "in game"
+                    playerState = "free"
+                    infoImage.removeFromParent()
+                }
+            }
         }
         
         InputController.prevTouches = InputController.currentTouches
@@ -232,6 +264,22 @@ class GameState {
             stageTransitionTimer = 0
             swappedStages = true
             Board.blockSize = Board.defaultBlockSize / 2
+        } else if(type == "info") {
+            state = "info screen"
+            infoScreenState = "fade in"
+            let texture = SKTexture.init(image: UIImage.init(named: "tutorial\((Board.currentStage?.infoScreens[0])!).png")!)
+            infoImage = SKSpriteNode.init(texture: texture)
+            
+            if #available(iOS 10.0, *) {
+                infoImage.scale(to: CGSize.init(width: GameState.screenWidth, height: GameState.screenHeight))
+            } else {
+                infoImage.xScale = (GameState.screenWidth / infoImage.size.width)
+                infoImage.yScale = (GameState.screenHeight / infoImage.size.height)
+            }
+            
+            infoImage.alpha = 0.0
+            infoImage.zPosition = 200
+            superNode.addChild(infoImage)
         }
         
         if(state == "rotating" && playerState != "changing color") {

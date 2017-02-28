@@ -78,6 +78,7 @@ class EditorScene: SKScene {
         
         GameState.drawNode = drawNode
         GameState.rotateNode = rotateNode
+        GameState.superNode = superNode
         
         if(Memory.getStageEdit() == "no stage") {
             Memory.saveStageEdit(code: Stage.defaultStage)

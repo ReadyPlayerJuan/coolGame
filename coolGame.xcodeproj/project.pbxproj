@@ -8,8 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		716D99991E60F12300822464 /* MenuButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716D99981E60F12300822464 /* MenuButton.swift */; };
-		716D999C1E60FCE800822464 /* InfoScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716D999B1E60FCE800822464 /* InfoScene.swift */; };
-		716D999E1E60FCFA00822464 /* InfoScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 716D999D1E60FCFA00822464 /* InfoScene.sks */; };
+		716D999C1E60FCE800822464 /* TestingScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716D999B1E60FCE800822464 /* TestingScene.swift */; };
+		716D999E1E60FCFA00822464 /* TestingScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 716D999D1E60FCFA00822464 /* TestingScene.sks */; };
+		716D99A21E613B3700822464 /* Particle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716D99A11E613B3700822464 /* Particle.swift */; };
 		71BB80CA1E2039E700024D90 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB80C91E2039E700024D90 /* AppDelegate.swift */; };
 		71BB80CC1E2039E700024D90 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 71BB80CB1E2039E700024D90 /* GameScene.sks */; };
 		71BB80D01E2039E700024D90 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 71BB80CF1E2039E700024D90 /* GameScene.swift */; };
@@ -67,8 +68,9 @@
 
 /* Begin PBXFileReference section */
 		716D99981E60F12300822464 /* MenuButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuButton.swift; sourceTree = "<group>"; };
-		716D999B1E60FCE800822464 /* InfoScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InfoScene.swift; sourceTree = "<group>"; };
-		716D999D1E60FCFA00822464 /* InfoScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = InfoScene.sks; sourceTree = "<group>"; };
+		716D999B1E60FCE800822464 /* TestingScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestingScene.swift; sourceTree = "<group>"; };
+		716D999D1E60FCFA00822464 /* TestingScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = TestingScene.sks; sourceTree = "<group>"; };
+		716D99A11E613B3700822464 /* Particle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Particle.swift; sourceTree = "<group>"; };
 		71BB80C61E2039E700024D90 /* coolGame.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = coolGame.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		71BB80C91E2039E700024D90 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = coolGame/AppDelegate.swift; sourceTree = "<group>"; };
 		71BB80CB1E2039E700024D90 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; name = GameScene.sks; path = coolGame/GameScene.sks; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 			children = (
 				71BB80C91E2039E700024D90 /* AppDelegate.swift */,
 				71BB81061E203B5300024D90 /* InputController.swift */,
+				71CD0D891E523118001198AB /* Memory.swift */,
 				71BB81091E203B5300024D90 /* MenuViewController.swift */,
 				71CD0D7E1E515117001198AB /* Main.storyboard */,
 				71CD0D811E515213001198AB /* LaunchScreen.storyboard */,
@@ -173,8 +176,8 @@
 		716D999A1E60FCC800822464 /* Info */ = {
 			isa = PBXGroup;
 			children = (
-				716D999D1E60FCFA00822464 /* InfoScene.sks */,
-				716D999B1E60FCE800822464 /* InfoScene.swift */,
+				716D999D1E60FCFA00822464 /* TestingScene.sks */,
+				716D999B1E60FCE800822464 /* TestingScene.swift */,
 			);
 			name = Info;
 			sourceTree = "<group>";
@@ -204,7 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				71BB81241E208FD100024D90 /* Scenes and Controllers */,
-				71BB81231E208FC200024D90 /* Custom Physics */,
+				71BB81231E208FC200024D90 /* Physics */,
 				71BB81261E244BED00024D90 /* Stages */,
 				71BB81251E20900800024D90 /* Game Classes */,
 				71BB80D61E2039E700024D90 /* Assets.xcassets */,
@@ -241,13 +244,13 @@
 			path = "HockeySDK-iOS/HockeySDK.embeddedframework";
 			sourceTree = "<group>";
 		};
-		71BB81231E208FC200024D90 /* Custom Physics */ = {
+		71BB81231E208FC200024D90 /* Physics */ = {
 			isa = PBXGroup;
 			children = (
 				71BB81031E203B5300024D90 /* Entity.swift */,
 				71BB81041E203B5300024D90 /* EntityManager.swift */,
 			);
-			name = "Custom Physics";
+			name = Physics;
 			path = ..;
 			sourceTree = "<group>";
 		};
@@ -278,6 +281,7 @@
 				71BB810A1E203B5300024D90 /* MovingBlock.swift */,
 				71BB810C1E203B5300024D90 /* ShapeLayer.swift */,
 				71BB80FF1E203B5300024D90 /* ColorTheme.swift */,
+				716D99A11E613B3700822464 /* Particle.swift */,
 			);
 			name = "Game Classes";
 			sourceTree = "<group>";
@@ -299,7 +303,6 @@
 			children = (
 				71BB81001E203B5300024D90 /* EditorScene.sks */,
 				71BB81011E203B5300024D90 /* EditorScene.swift */,
-				71CD0D891E523118001198AB /* Memory.swift */,
 				71CD0D871E523094001198AB /* EditorManager.swift */,
 				71CD0D8B1E523859001198AB /* EditorButton.swift */,
 			);
@@ -375,7 +378,7 @@
 				TargetAttributes = {
 					71BB80C51E2039E700024D90 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 89MULK3ETR;
+						DevelopmentTeam = SQ945HS7ZB;
 						ProvisioningStyle = Automatic;
 					};
 					71BB80DF1E2039E700024D90 = {
@@ -423,7 +426,7 @@
 				71BB81221E20563000024D90 /* HockeySDKResources.bundle in Resources */,
 				71CD0D831E515213001198AB /* LaunchScreen.storyboard in Resources */,
 				71BB80CC1E2039E700024D90 /* GameScene.sks in Resources */,
-				716D999E1E60FCFA00822464 /* InfoScene.sks in Resources */,
+				716D999E1E60FCFA00822464 /* TestingScene.sks in Resources */,
 				71BB80D71E2039E700024D90 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -469,7 +472,7 @@
 				71CD0D7B1E50DF60001198AB /* LineSegment.swift in Sources */,
 				71BB81161E203B5300024D90 /* InputController.swift in Sources */,
 				71BB81141E203B5300024D90 /* EntityManager.swift in Sources */,
-				716D999C1E60FCE800822464 /* InfoScene.swift in Sources */,
+				716D999C1E60FCE800822464 /* TestingScene.swift in Sources */,
 				71BB80D01E2039E700024D90 /* GameScene.swift in Sources */,
 				71BB811C1E203B5300024D90 /* ShapeLayer.swift in Sources */,
 				71C37B1C1E281ED5001F1810 /* PlayerDeathEffect.swift in Sources */,
@@ -493,6 +496,7 @@
 				71C37B1A1E281E32001F1810 /* PlayerCCEffect.swift in Sources */,
 				71BB812A1E244F6900024D90 /* StageSet1.swift in Sources */,
 				71CD0D7D1E50DFCA001198AB /* LightSource.swift in Sources */,
+				716D99A21E613B3700822464 /* Particle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -645,15 +649,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 89MULK3ETR;
+				DEVELOPMENT_TEAM = SQ945HS7ZB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
 				);
 				INFOPLIST_FILE = coolGame/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = game.coolGame;
+				PRODUCT_BUNDLE_IDENTIFIER = com.firstGame.coolGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};
@@ -664,15 +668,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 89MULK3ETR;
+				DEVELOPMENT_TEAM = SQ945HS7ZB;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/HockeySDK-iOS/HockeySDK.embeddedframework",
 				);
 				INFOPLIST_FILE = coolGame/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = game.coolGame;
+				PRODUCT_BUNDLE_IDENTIFIER = com.firstGame.coolGame;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
 			};

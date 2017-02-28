@@ -20,13 +20,28 @@ class Stage {
     var exitTargets: [[Int]]
     var otherEntities: [Entity]! = []
     var spawnPoint: CGPoint!
+    var playerAbilities = Player.maxAbilities
+    var colorTheme = 0
     
-    init(withBlocks: [[Int]], entities: [Entity], spawn: CGPoint, withName: String, exits: [[Int]]) {
+    var infoScreens = [Int]()
+    
+    var ID: Int
+    
+    init(withBlocks: [[Int]], entities: [Entity], spawn: CGPoint, withName: String, exits: [[Int]], colorTheme: Int) {
+        ID = Stage.getID()
+        
         blocks = withBlocks
         name = withName
         spawnPoint = spawn
         otherEntities = entities
         exitTargets = exits
+        self.colorTheme = colorTheme
+    }
+    
+    static var nextID = 0
+    class func getID() -> Int {
+        nextID += 1
+        return nextID-1
     }
     
     func getEntities() -> [Entity] {
@@ -48,8 +63,52 @@ class Stage {
         return children.count
     }
     
-    enum LoadStageError: Error {
-        case invalidCode
+    func findStageWithID(_ targetID: Int, baseID: Int) -> Stage? {
+        if(ID == targetID) {
+            return self
+        } else {
+            for c in children {
+                if(c.ID != baseID) {
+                    if(c.findStageWithID(targetID, baseID: baseID) != nil) {
+                        return c.findStageWithID(targetID, baseID: baseID)
+                    }
+                }
+            }
+        }
+        return nil
+    }
+    
+    /*
+     stage writing guide:
+     - stage arrays must be rectangular
+     - spawnpoint and overlayed entities must be defined after instantiating stage array
+     
+     - code for block types:
+     - 0 is black passable block
+     - 1 is white impassable block
+     - 2-8 are colored blocks, color is in ColorTheme with index n-2
+     - -9 is invisible impassable block, to create illusion of no blocks
+     - -AB is end gate, where A-1 is direction and B-2 is colorIndex of surrounding block
+     - ABC is color change, where A is direction, B-2 is colorIndex of surrounding block, and c-2 is colorIndex of color change triangle
+     - 99 is a hazard block
+     */
+    
+    class func loadTestingArea() -> Stage {
+        let stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 2, 0, 0, 1],
+                        [1, 0, 2, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 2, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 2, 0, 0, 0, 1],
+                        [1, 0, 0, 2, 0, 0, 2,-11,1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1] ]
+        let spawnPoint = CGPoint(x: 1, y: 6)
+        let exitTargets = [[7, 6, 0]]
+        let otherEntities: [Entity] = [LightSource.init(type: 0, xPos: 4.0, yPos: 3), MovingBlock.init(color: 2, dir: 1, xPos: 3, yPos: 1)]
+        
+        let s = Stage.init(withBlocks: stage, entities: otherEntities, spawn: spawnPoint, withName: "", exits: exitTargets, colorTheme: 1)
+        StageSet2.loadStages(base: s)
+        return s
     }
     
     class func loadStage(code: String) -> Stage {
@@ -58,6 +117,7 @@ class Stage {
         var spawn = [Int]()
         var exits = [[Int]]()
         var name = ""
+        var colorTheme = 0
         
         var currentAction = ""
         var index = 0
@@ -213,12 +273,16 @@ class Stage {
                     index += 1
                 }
                 completed = true
+            } else if(currentAction == "c") {
+                colorTheme = code.charAt(index).toInt()!
+                index += 1
+                currentAction = ""
             }
         }
         
         if(invalid) {
             return Stage.loadStage(code: Stage.defaultStage)
         }
-        return Stage.init(withBlocks: blocks, entities: entities, spawn: CGPoint(x: spawn[0], y: spawn[1]), withName: name, exits: exits)
+        return Stage.init(withBlocks: blocks, entities: entities, spawn: CGPoint(x: spawn[0], y: spawn[1]), withName: name, exits: exits, colorTheme: colorTheme)
     }
 }

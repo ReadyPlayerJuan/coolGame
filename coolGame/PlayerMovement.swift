@@ -81,44 +81,49 @@ extension Player {
     func rotate(delta: Double) {
         yVel = 0
         verticalMovementTimer = 0
-        horizontalMovementTimer = 0
         nextY = Double(Int(nextY + 0.5))
         
-        let rotateSpeed = 2.5
+        let rotationTimeMax = 0.4
         
-        if(movingLeft) {
-            rotationVel += rotateSpeed * 3 * delta
-        }
-        if(movingRight) {
-            rotationVel -= rotateSpeed * 3 * delta
-        }
-        
-        if(GameState.hingeDirection == "left") {
-            rotationVel -= rotateSpeed * delta
+        if(movingLeft || movingRight) {
+            if((movingLeft && GameState.hingeDirection == "left") || (movingRight && GameState.hingeDirection == "right")) {
+                horizontalMovementTimer += delta
+            } else {
+                horizontalMovementTimer -= delta
+            }
         } else {
-            rotationVel += rotateSpeed * delta
+            horizontalMovementTimer -= delta / 2.0
+        }
+        if(horizontalMovementTimer > rotationTimeMax) {
+            horizontalMovementTimer = rotationTimeMax
         }
         
-        rotation += rotationVel
+        rotationVel = (horizontalMovementTimer / rotationTimeMax) * delta * 120
         
         if(GameState.hingeDirection == "left") {
+            rotation += rotationVel
             if(rotation >= 30) {
                 rotation = 0.0
                 rotationVel = 0.0
+                horizontalMovementTimer = 0
                 GameState.gameAction(type: "rotate")
             } else if(rotation < 0) {
                 rotation = 0.0
                 rotationVel = 0.0
+                horizontalMovementTimer = 0
                 GameState.playerState = "free"
             }
         } else {
+            rotation -= rotationVel
             if(rotation <= -30) {
                 rotation = 0.0
                 rotationVel = 0.0
+                horizontalMovementTimer = 0
                 GameState.gameAction(type: "rotate")
             } else if(rotation > 0) {
                 rotation = 0.0
                 rotationVel = 0.0
+                horizontalMovementTimer = 0
                 GameState.playerState = "free"
             }
         }
@@ -152,18 +157,22 @@ extension Player {
             hitCeiling = false
             
             checkNorthSouthCollision(with: with)
-            checkEastWestCollision(with: with)
+            if(GameState.state != "resetting stage") {
+                checkEastWestCollision(with: with)
+            }
             
             if(GameState.playerState == "free") {
-                if(x == Double(Int(x)) && y == Double(Int(y)) && xVel == 0 && yVel == 0) {
+                if(x == Double(Int(x)) && y == Double(Int(y)) && xVel == 0 && yVel == 0 && GameState.playerAbilities >= 1) {
                     for t in InputController.currentTouches {
                         if(t.y < 0) {
                             if(t.x < 0 && canHingeLeft) {
+                                horizontalMovementTimer = 0
                                 GameState.playerState = "rotating"
                                 GameState.hingeDirection = "left"
                                 rotationVel = 0.1
                                 rotation = 0.0
                             } else if(t.x >= 0 && canHingeRight) {
+                                horizontalMovementTimer = 0
                                 GameState.playerState = "rotating"
                                 GameState.hingeDirection = "right"
                                 rotationVel = -0.1
@@ -200,7 +209,7 @@ extension Player {
                             //print(" hit ground, with block at \(Int(entity.x)), \(Int(entity.y))")
                         }
                     } else if(yVel < 0) {
-                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX +         0.5), y: (nextY - (sqrt(3.0) / 2.0)) + colAcc))) {
+                        if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + 0.5), y: (nextY - (sqrt(3.0) / 2.0)) + colAcc))) {
                             
                             nextY = entity.nextY + (sqrt(3.0) / 2.0) + 2*colAcc
                             yVel = 0
@@ -211,8 +220,17 @@ extension Player {
                             }
                             //print(" hit ceiling, with block at \(Int(entity.x)), \(Int(entity.y))  xmod = \(xMod)")
                         }
-                    } else if(yVel == 0 && entity.isDangerous) {
+                    } else if(yVel == 0) {
                         if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1+colAcc, width: 1.0, height: 1.0), point: CGPoint(x: x + 1 - colAcc, y: nextY+colAcc))) {
+                            
+                            if(entity.isDangerous) {
+                                GameState.gameAction(type: "kill player")
+                            }
+                        }
+                    }
+                    if(rectContainsPoint(rect: CGRect.init(x: entity.nextX, y: entity.nextY-1, width: 1.0, height: 1.0), point: CGPoint(x: (nextX + 0.5), y: (nextY - (sqrt(3.0) / 2.0)) + colAcc)) ) {
+                        
+                        if(entity.name == "moving block" && (entity as! MovingBlock).falling && (entity as! MovingBlock).direction == Board.direction%2) {
                             GameState.gameAction(type: "kill player")
                         }
                     }

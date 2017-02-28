@@ -47,7 +47,7 @@ class LightSource: Entity {
         sprite[0].removeAllChildren()
         
         var center = CGPoint()
-        if(type == 0) {
+        if(type == 099) {
             center = CGPoint(x: x+0.5, y: y-0.5)
         } else {
             let player = EntityManager.getPlayer() as! Player
@@ -77,13 +77,41 @@ class LightSource: Entity {
         var confirmedSegmentSpritePoints = [[CGPoint]]()
         
         for ls in sortedSegments {
+            //confirmedSegments.append(ls)
+            //confirmedSegmentSpritePoints.append(ls.points)
+            var blockingSegments = [LineSegment]()
             var numVisiblePoints = 0
+            
             for p in ls.points {
                 var blocked = false
+                
                 if(confirmedSegments.count > 0) {
                     for ls2 in confirmedSegments {
-                        if(!blocked && linesIntersect(ls2, with: LineSegment.init(center, p))) {
+                        if(!(p.x > center.x && (ls2.points[0].x < center.x && ls2.points[1].x < center.x)) &&
+                            !(p.x < center.x && (ls2.points[0].x > center.x && ls2.points[1].x > center.x)) &&
+                            !(p.y > center.y && (ls2.points[0].y < center.y && ls2.points[1].y < center.y)) &&
+                            !(p.y < center.y && (ls2.points[0].y > center.y && ls2.points[1].y > center.y)) &&
+                            linesIntersect(ls2, with: LineSegment.init(center, p))) {
                             blocked = true
+                            
+                            let a = CGFloat(0.0)
+                            var pt: LineSegment!
+                            let p0 = ls2.points[0]
+                            let p1 = ls2.points[1]
+                            if(ls2.vertical) {
+                                if(ls2.points[0].y < ls2.points[1].y) {
+                                    pt = LineSegment.init(CGPoint.init(x: p0.x, y: p0.y + a), CGPoint.init(x: p1.x, y: p1.y - a))
+                                } else {
+                                    pt = LineSegment.init(CGPoint.init(x: p0.x, y: p0.y - a), CGPoint.init(x: p1.x, y: p1.y + a))
+                                }
+                            } else {
+                                if(ls2.points[0].x < ls2.points[1].x) {
+                                    pt = LineSegment.init(CGPoint.init(x: p0.x + a, y: p0.y), CGPoint.init(x: p1.x - a, y: p1.y))
+                                } else {
+                                    pt = LineSegment.init(CGPoint.init(x: p0.x - a, y: p0.y), CGPoint.init(x: p1.x + a, y: p1.y))
+                                }
+                            }
+                            blockingSegments.append(pt)
                         }
                     }
                 }
@@ -99,7 +127,50 @@ class LightSource: Entity {
                 break
             case 1:
                 // part of the segment is visible
-                //to be addded
+                
+                var possibleSegments = [LineSegment]()
+                
+                for blockedBy in blockingSegments {
+                    var points = [CGPoint]()
+                    
+                    for p in ls.points {
+                        if(linesIntersect(blockedBy, with: LineSegment.init(center, p))) {
+                            if(ls.vertical) {
+                                if(linesIntersect(ls, with: LineSegment.init(center, blockedBy.points[0]))) {
+                                    points.append(CGPoint.init(x: ls.points[0].x, y: getIntersectPosition(ls, with: LineSegment.init(center, blockedBy.points[0]))))
+                                } else if(linesIntersect(ls, with: LineSegment.init(center, blockedBy.points[1]))) {
+                                    points.append(CGPoint.init(x: ls.points[0].x, y: getIntersectPosition(ls, with: LineSegment.init(center, blockedBy.points[1]))))
+                                }
+                            } else {
+                                if(linesIntersect(ls, with: LineSegment.init(center, blockedBy.points[0]))) {
+                                    points.append(CGPoint.init(x: getIntersectPosition(ls, with: LineSegment.init(center, blockedBy.points[0])), y: ls.points[0].y))
+                                } else if(linesIntersect(ls, with: LineSegment.init(center, blockedBy.points[1]))) {
+                                    points.append(CGPoint.init(x: getIntersectPosition(ls, with: LineSegment.init(center, blockedBy.points[1])), y: ls.points[0].y))
+                                }
+                            }
+                        } else {
+                            points.append(p)
+                        }
+                    }
+                    
+                    
+                    if(points.count == 2) {
+                        possibleSegments.append(LineSegment.init(points[0], points[1]))
+                    }
+                }
+                
+                //choose smallest segment
+                if(possibleSegments.count > 0) {
+                    var smallestSegment = possibleSegments[0]
+                    for s in possibleSegments {
+                        if(s.distance < smallestSegment.distance) {
+                            smallestSegment = s
+                        }
+                    }
+                    
+                    confirmedSegments.append(smallestSegment)
+                    confirmedSegmentSpritePoints.append(smallestSegment.points)
+                }
                 break
             case 2:
                 //all of the segment is visible
@@ -110,6 +181,7 @@ class LightSource: Entity {
                 break
             }
         }
+        
         let size = CGFloat(Board.blockSize)
         
         let temp = SKShapeNode.init(rect: CGRect.init(x: -20, y: -20, width: 40, height: 40))
@@ -120,104 +192,34 @@ class LightSource: Entity {
         sprite[0].addChild(temp)
         
         var s: SKShapeNode
-        /*
-        for p in confirmedSegmentSpritePoints {
+        
+        
+        for ls in confirmedSegments {
             let b = UIBezierPath.init()
-            b.move(to: CGPoint(x: 0, y: 0))
-            b.addLine(to: CGPoint(x: p[0].x * size, y: -p[0].y * size))
-            b.addLine(to: CGPoint(x: p[1].x * size, y: -p[1].y * size))
+            b.move(to: CGPoint(x: center.x * size, y: -center.y * size))
+            b.addLine(to: CGPoint(x: ls.points[0].x * size, y: -ls.points[0].y * size))
+            b.addLine(to: CGPoint(x: ls.points[1].x * size, y: -ls.points[1].y * size))
             
             s = SKShapeNode.init(path: b.cgPath)
             
-            s.position = CGPoint(x: (center.x * size), y: (-center.y * size))
-            s.fillColor = UIColor.init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
+            s.fillColor = UIColor.init(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.2)
             s.strokeColor = UIColor.clear
             sprite[0].addChild(s.copy() as! SKShapeNode)
-        }*/
-        for ls in confirmedSegments {
-            if(ls.vertical) {
-                s = SKShapeNode.init(rect: CGRect.init(x: ls.points[0].x*size - 10, y: -ls.points[0].y*size, width: 20, height: (ls.points[0].y-ls.points[1].y)*size))
-                s.fillColor = UIColor.green
-                s.alpha = 0.4
-                s.zPosition = 2
-                sprite[0].addChild(s.copy() as! SKShapeNode)
-            } else {
-                s = SKShapeNode.init(rect: CGRect.init(x: ls.points[0].x*size, y: -ls.points[0].y*size-10, width: (ls.points[0].x-ls.points[1].x)*size, height: 20))
-                s.fillColor = UIColor.green
-                s.alpha = 0.4
-                s.zPosition = 2
-                sprite[0].addChild(s.copy() as! SKShapeNode)
-            }
         }
         
-        /*
-        var s: SKShapeNode
-        
-        let size = CGFloat(Board.blockSize)
-        let shadowDistance = CGFloat(400.0)
-        
-        
-        for ls in sortedSegments {
-            let point0 = ls.points[0]
-            let point1 = ls.points[1]
+        for ls in confirmedSegments {
+            //let ls = confirmedSegments[20]
+            let minX = min(ls.points[0].x, ls.points[1].x)*size
+            let minY = min(ls.points[0].y, ls.points[1].y)*size
+            let maxX = max(ls.points[0].x, ls.points[1].x)*size
+            let maxY = max(ls.points[0].y, ls.points[1].y)*size
             
-            if(ls.points[0].x == ls.points[1].x) {
-                let slope0 = -CGFloat(Double(point0.y - center.y) / Double(point0.x - center.x))
-                let slope1 = -CGFloat(Double(point1.y - center.y) / Double(point1.x - center.x))
-                
-                let xMod = (point1.x - point0.x) * size
-                let yMod = -(point1.y - point0.y) * size
-                
-                var distance0 = shadowDistance
-                if(center.x > point0.x) {
-                    distance0 *= -1
-                }
-                var distance1 = shadowDistance
-                if(center.x > point1.x) {
-                    distance1 *= -1
-                }
-                
-                let b = UIBezierPath.init()
-                b.move(to: CGPoint(x: 0, y: 0))
-                b.addLine(to: CGPoint(x: 0 + xMod, y: 0 + yMod))
-                
-                b.addLine(to: CGPoint(x: xMod + (distance1), y: yMod + slope1 * (distance1)))
-                b.addLine(to: CGPoint(x: (distance0), y: slope0 * (distance0)))
-                
-                
-                s = SKShapeNode.init(path: b.cgPath)
-            } else {
-                let slope0 = -CGFloat(Double(point0.y - center.y) / Double(point0.x - center.x))
-                let slope1 = -CGFloat(Double(point1.y - center.y) / Double(point1.x - center.x))
-                
-                let xMod = (point1.x - point0.x) * size
-                let yMod = (point1.y - point0.y) * size
-                
-                var distance0 = shadowDistance
-                if(center.x > point0.x) {
-                    distance0 *= -1
-                }
-                var distance1 = shadowDistance
-                if(center.x > point1.x) {
-                    distance1 *= -1
-                }
-                
-                let b = UIBezierPath.init()
-                b.move(to: CGPoint(x: 0, y: 0))
-                b.addLine(to: CGPoint(x: 0 + xMod, y: 0 + yMod))
-                
-                b.addLine(to: CGPoint(x: xMod + (distance1), y: yMod + slope1 * (distance1)))
-                b.addLine(to: CGPoint(x: (distance0), y: slope0 * (distance0)))
-                
-                
-                s = SKShapeNode.init(path: b.cgPath)
-            }
-            
-            s.position = CGPoint(x: point0.x * size, y: -point0.y * size)
-            s.fillColor = UIColor.init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.2)
-            s.strokeColor = UIColor.clear
+            s = SKShapeNode.init(rect: CGRect.init(x: minX-5, y: -maxY-5, width: maxX-minX+10, height: maxY-minY+10))
+            s.fillColor = UIColor.green
+            s.alpha = 0.4
+            s.zPosition = 2
             sprite[0].addChild(s.copy() as! SKShapeNode)
-        }*/
+        }
     }
     
     private func linesIntersect(_ this: LineSegment, with: LineSegment) -> Bool {
@@ -229,6 +231,18 @@ class LightSource: Entity {
             let slope = (with.points[1].x - with.points[0].x) / (with.points[1].y - with.points[0].y)
             let xPos = (slope * (this.points[0].y - with.points[0].y)) + with.points[0].x
             return ((xPos > this.points[0].x && xPos < this.points[1].x) || (xPos < this.points[0].x && xPos > this.points[1].x))
+        }
+    }
+    
+    private func getIntersectPosition( _ this: LineSegment, with: LineSegment) -> CGFloat {
+        if(this.vertical) {
+            let slope = (with.points[1].y - with.points[0].y) / (with.points[1].x - with.points[0].x)
+            let yPos = (slope * (this.points[0].x - with.points[0].x)) + with.points[0].y
+            return yPos
+        } else {
+            let slope = (with.points[1].x - with.points[0].x) / (with.points[1].y - with.points[0].y)
+            let xPos = (slope * (this.points[0].y - with.points[0].y)) + with.points[0].x
+            return xPos
         }
     }
     

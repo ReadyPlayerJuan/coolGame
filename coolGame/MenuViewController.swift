@@ -60,9 +60,9 @@ class MenuViewController: UIViewController {
                     
                     view.presentScene(scene)
                 }
-            } else if(name == "instructions") {
-                if let scene = SKScene(fileNamed: "InfoScene") {
-                    (scene as! InfoScene).controller = self
+            } else if(name == "testing") {
+                if let scene = SKScene(fileNamed: "TestingScene") {
+                    (scene as! TestingScene).controller = self
                     scene.scaleMode = .resizeFill
                     
                     view.presentScene(scene)

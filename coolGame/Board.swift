@@ -23,7 +23,7 @@ class Board {
     static var direction = 0
     static let colorVariation = 30.0
     
-    static var stageNum = -1
+    static var stageID = -1
     
     
     static let gray = CGFloat(0.25)
@@ -32,11 +32,34 @@ class Board {
     class func nextStage() {
         if(GameState.inEditor) {
             currentStage = Stage.loadStage(code: Memory.getStageEdit())
+        } else if(GameState.testing) {
+            blockSize = defaultBlockSize
+            if(currentStage == nil) {
+                loadAllStages()
+                currentStage = Stage.loadTestingArea()
+            } else {
+                if(currentStage?.children.count != 0) {
+                    currentStage = currentStage?.children[GameState.exitTarget]
+                } else {
+                    currentStage = Stage.loadTestingArea()
+                }
+            }
         } else {
             blockSize = defaultBlockSize
             if(currentStage == nil) {
                 loadAllStages()
-                currentStage = hubStage
+                let ID = Memory.getCurrentStageID()
+                    
+                if(ID == -1) {
+                    currentStage = hubStage
+                } else {
+                    if(hubStage.findStageWithID(ID, baseID: hubStage.ID) != nil) {
+                        currentStage = hubStage.findStageWithID(ID, baseID: hubStage.ID)
+                    } else {
+                        print("saved stage not found")
+                        currentStage = hubStage
+                    }
+                }
             } else {
                 if(currentStage?.children.count != 0) {
                     currentStage = currentStage?.children[GameState.exitTarget]
@@ -45,6 +68,12 @@ class Board {
                 }
             }
         }
+        
+        colorTheme = currentStage!.colorTheme
+        stageID = (currentStage?.ID)!
+        Memory.saveCurrentStageID(ID: stageID)
+        GameState.playerAbilities = currentStage!.playerAbilities
+        Memory.saveAbilityUnlockProgress(progress: GameState.playerAbilities)
         
         direction = 0
         let temp: [[Int]]! = currentStage?.blocks
@@ -63,6 +92,9 @@ class Board {
                     blocks[row][col] = Block.init(blockType: temp[row][col], color: -1, secondaryColor: -1, dir: -1, x: Double(col), y: Double(row))
                 } else if(temp[row][col] < 10 && temp[row][col] > 1) {
                     blocks[row][col] = Block.init(blockType: 2, color: temp[row][col]-2, secondaryColor: -1, dir: -1, x: Double(col), y: Double(row))
+                } else if(temp[row][col] > -9 && temp[row][col] < -1) {
+                    blocks[row][col] = Block.init(blockType: 2, color: (-temp[row][col])-2, secondaryColor: -1, dir: -1, x: Double(col), y: Double(row))
+                    blocks[row][col]?.invert()
                 } else if(temp[row][col] == 99) {
                     blocks[row][col] = Block.init(blockType: 6, color: -1, secondaryColor: -1, dir: -1, x: Double(col), y: Double(row))
                 } else if(temp[row][col] >= 10) {
@@ -223,21 +255,19 @@ class Board {
     }
     
     private class func loadAllStages() {
-        let stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                        [1, 0, 0, 0, 0, 0, 0, 0,-11,0, 1],
-                        [1,-41,99,99,0, 0, 0, 0, 3,99, 1],
-                        [1, 0, 0, 0, 0, 0, 0, 0, 4, 0, 1],
-                        [1, 0, 0, 0, 0, 0, 3, 0,342,0, 1],
-                        [1, 0, 0, 0, 0, 0, 0, 3, 4,113,1],
-                        [1, 0, 0, 3, 0, 0, 3, 0, 4,112,1],
-                        [1, 0, 0, 0, 3, 0, 0, 0, 0, 0, 1],
-                        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] ]
-        let spawnPoint = CGPoint(x: 1, y: 6)
-        let exitTargets = [[1, 2, 0], [8, 1, 1]]
-        let otherEntities = [MovingBlock.init(color: 1, dir: 1, xPos: 3, yPos: 5), LightSource.init(type: 0, xPos: 1, yPos: 7)]
+        let stage =   [ [1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0, 0, 0, 0, 1],
+                        [1, 0, 0, 0, 0,-11,0, 0, 1],
+                        [1, 1, 1, 1, 1, 1, 1, 1, 1] ]
+        let spawnPoint = CGPoint(x: 3, y: 5)
+        let exitTargets = [[5, 5, 0]]
+        let otherEntities: [Entity] = []
         
-        hubStage = Stage.init(withBlocks: stage, entities: otherEntities, spawn: spawnPoint, withName: "hub", exits: exitTargets)
+        hubStage = Stage.init(withBlocks: stage, entities: otherEntities, spawn: spawnPoint, withName: "hub", exits: exitTargets, colorTheme: 1)
         StageSet1.loadStages(base: hubStage)
-        StageSet2.loadStages(base: hubStage)
+        //StageSet2.loadStages(base: hubStage)
     }
 }
